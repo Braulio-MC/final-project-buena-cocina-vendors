@@ -1,0 +1,36 @@
+package com.bmc.buenacocinavendors.ui.navigation.graph
+
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.navigation
+import com.bmc.buenacocinavendors.ui.navigation.Graph
+import com.bmc.buenacocinavendors.ui.navigation.Screen
+import com.bmc.buenacocinavendors.ui.screen.login.LoginScreen
+
+fun NavGraphBuilder.authGraph(
+    windowSizeClass: WindowSizeClass,
+    onLoginButton: (Boolean) -> Unit
+) {
+    navigation(
+        startDestination = Screen.Auth.Login.route,
+        route = Graph.Auth.AuthGraph.route
+    ) {
+        loginScreen(
+            windowSizeClass = windowSizeClass,
+            onLoginButton = onLoginButton
+        )
+    }
+}
+
+fun NavGraphBuilder.loginScreen(
+    windowSizeClass: WindowSizeClass,
+    onLoginButton: (Boolean) -> Unit
+) {
+    composable(Screen.Auth.Login.route) {
+        LoginScreen(
+            windowSizeClass = windowSizeClass,
+            onLoginButton = onLoginButton
+        )
+    }
+}

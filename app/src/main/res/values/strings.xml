@@ -1,0 +1,213 @@
+<resources>
+    <string name="app_name">Buena Cocina Vendors</string>
+
+    <!-- Auth0 -->
+    <string name="com_auth0_scheme">app</string>
+
+    <!-- Common -->
+    <string name="common_no_internet_error">No hay conexion a internet\n\nComprueba tu fuente de internet y vuelve a intentarlo</string>
+
+    <!-- UI text form errors -->
+    <string name="ui_text_form_error_email_is_blank">El correo electronico no puede estar vacio</string>
+    <string name="ui_text_form_error_email_too_long">El correo electronico es mayor a %1$d caracteres</string>
+    <string name="ui_text_form_error_email_not_valid">El correo electronico no es valido</string>
+    <string name="ui_text_form_error_image_not_valid">La imagen no es valida</string>
+    <string name="ui_text_form_error_phone_is_blank">El numero de telefono no puede estar vacio</string>
+    <string name="ui_text_form_error_phone_too_short">El numero de telefono es menor a 10 digitos</string>
+    <string name="ui_text_form_error_phone_too_long">El numero de telefono excede los 10 digitos</string>
+    <string name="ui_text_form_error_phone_not_valid">El numero de telefono no es valido</string>
+    <string name="ui_text_form_error_store_description_is_blank">La descripcion no puede estar vacia</string>
+    <string name="ui_text_form_error_store_description_too_short">La descripcion es menor a %1$d caracteres</string>
+    <string name="ui_text_form_error_store_description_too_long">La descripcion es mayor a %1$d caracteres</string>
+    <string name="ui_text_form_error_store_name_is_blank">El nombre no puede estar vacio</string>
+    <string name="ui_text_form_error_store_name_too_short">El nombre es menor a %1$d caracteres</string>
+    <string name="ui_text_form_error_store_name_too_long">El nombre es mayor a %1$d caracteres</string>
+    <string name="ui_text_form_error_category_name_is_blank">El nombre no puede estar vacio</string>
+    <string name="ui_text_form_error_category_name_too_short">El nombre es menor a %1$d caracteres</string>
+    <string name="ui_text_form_error_category_name_too_long">El nombre es mayor a %1$d caracteres</string>
+    <string name="ui_text_form_error_category_not_valid">La categoria no es valida</string>
+    <string name="ui_text_form_error_location_name_is_blank">El nombre no puede estar vacio</string>
+    <string name="ui_text_form_error_location_name_too_short">El nombre es menor a %1$d caracteres</string>
+    <string name="ui_text_form_error_location_name_too_long">El nombre es mayor a %1$d caracteres</string>
+    <string name="ui_text_form_error_location_description_is_blank">La descripcion no puede estar vacia</string>
+    <string name="ui_text_form_error_location_description_too_short">La descripcion es menor a %1$d caracteres</string>
+    <string name="ui_text_form_error_location_description_too_long">La descripcion es mayor a %1$d caracteres</string>
+    <string name="ui_text_form_error_location_not_valid">La direccion no es valida</string>
+    <string name="ui_text_form_error_discount_start_date_after_end_date">La fecha de inicio no puede ser mayor a la fecha de fin</string>
+    <string name="ui_text_form_error_discount_start_date_out_range">La fecha de inicio no puede ser menor a la fecha actual</string>
+    <string name="ui_text_form_error_discount_end_date_before_start_date">La fecha de fin no puede ser menor a la fecha de inicio</string>
+    <string name="ui_text_form_error_discount_percentage_is_blank">El porcentaje no puede estar vacio</string>
+    <string name="ui_text_form_error_discount_percentage_too_short">El porcentaje es menor a %1$d</string>
+    <string name="ui_text_form_error_discount_percentage_too_long">El porcentaje es mayor a %1$d</string>
+    <string name="ui_text_form_error_discount_percentage_not_valid">El porcentaje no es valido</string>
+    <string name="ui_text_form_error_discount_name_is_blank">El nombre no puede estar vacio</string>
+    <string name="ui_text_form_error_discount_name_too_short">El nombre es menor a %1$d caracteres</string>
+    <string name="ui_text_form_error_discount_name_too_long">El nombre es mayor a %1$d caracteres</string>
+    <string name="ui_text_form_error_discount_dates_are_null">Fecha de inicio o fecha de fin invalida</string>
+    <string name="ui_text_form_error_discount_dates_are_equal">Las fechas de inicio y fin no pueden ser iguales</string>
+    <string name="ui_text_form_error_discount_times_are_null">Hora de inicio u hora de fin invalida</string>
+    <string name="ui_text_form_error_discount_not_valid">El descuento no es valido</string>
+    <string name="ui_text_form_error_order_status_not_valid">El estado para el pedido no es valido</string>
+    <string name="ui_text_form_error_product_name_is_blank">El nombre no puede estar vacio</string>
+    <string name="ui_text_form_error_product_name_too_short">El nombre es menor a %1$d caracteres</string>
+    <string name="ui_text_form_error_product_name_too_long">El nombre es mayor a %1$d caracteres</string>
+    <string name="ui_text_form_error_product_description_is_blank">La descripcion no puede estar vacia</string>
+    <string name="ui_text_form_error_product_description_too_short">La descripcion es menor a %1$d caracteres</string>
+    <string name="ui_text_form_error_product_description_too_long">La descripcion es mayor a %1$d caracteres</string>
+    <string name="ui_text_form_error_product_price_is_blank">El precio no puede estar vacio</string>
+    <string name="ui_text_form_error_product_price_too_short">El precio es menor a %1$d</string>
+    <string name="ui_text_form_error_product_price_not_valid">El precio no es valido</string>
+    <string name="ui_text_form_error_product_quantity_is_blank">La cantidad no puede estar vacia</string>
+    <string name="ui_text_form_error_product_quantity_too_short">La cantidad es menor a %1$d</string>
+    <string name="ui_text_form_error_product_quantity_not_valid">La cantidad no es valida</string>
+    <string name="ui_text_form_error_product_not_valid">El producto no es valido</string>
+
+    <!-- Navigation -->
+    <string name="navigation_home">Inicio</string>
+    <string name="navigation_order">Pedidos</string>
+    <string name="navigation_chat">Chat</string>
+    <string name="navigation_profile">Perfil</string>
+    <string name="navigation_home_content_desc">Navigation item for home</string>
+    <string name="navigation_order_content_desc">Navigation item for order</string>
+    <string name="navigation_chat_content_desc">Navigation item for chat</string>
+    <string name="navigation_profile_content_desc">Navigation item for profile</string>
+
+    <!-- Store registration screen -->
+    <string name="store_registration_screen_store_name_placeholder">ej. La Dulceria Feliz</string>
+    <string name="store_registration_screen_store_desc_placeholder">ej. La Dulceria Feliz es una tienda donde se venden dulces de todo tipo para hacer tu dia mas ameno en CUCEI</string>
+    <string name="store_registration_screen_store_email_placeholder">ej. dulceriafeliz@email.com</string>
+    <string name="store_registration_screen_store_phone_placeholder">ej. 1234567890</string>
+    <string name="store_registration_screen_title">Registrar una tienda</string>
+    <string name="store_registration_screen_image_label">Imagen representativa de la tienda</string>
+    <string name="store_registration_screen_pick_photo_button_text">Seleccionar una imagen</string>
+    <string name="store_registration_screen_select_store_name_label">Nombre para la tienda</string>
+    <string name="store_registration_screen_select_store_desc_label">Breve descripcion de la tienda</string>
+    <string name="store_registration_screen_select_store_email_label">Correo electronico de la tienda</string>
+    <string name="store_registration_screen_select_store_phone_label">Numero de telefono de la tienda</string>
+    <string name="store_registration_screen_submit_button_text">Crear tienda</string>
+    <!-- Store registration screen information -->
+    <string name="store_registration_information_screen_title">Acerca de registrar una tienda</string>
+    <string name="store_registration_information_screen_considerations">Consideraciones</string>
+    <string name="store_registration_information_screen_recommendations">Recomendaciones</string>
+    <!-- Store registration screen information restrictions -->
+    <string name="store_registration_information_screen_name_restriction">El nombre debe tener entre %1$d y %2$d caracteres</string>
+    <string name="store_registration_information_screen_desc_restriction">La descripcion debe tener entre %1$d y %2$d caracteres</string>
+    <string name="store_registration_information_screen_email_restriction">El correo electronico debe tener como maximo %1$d caracteres</string>
+    <string name="store_registration_information_screen_phone_restriction">El numero de telefono debe tener como maximo %1$d caracteres</string>
+    <!-- Store registration screen information recommendations -->
+    <string name="store_registration_information_screen_image_recommendation1">Sube un logo representativo de la tienda</string>
+    <string name="store_registration_information_screen_image_recommendation2">Procura que el logo sea de alta calidad</string>
+
+    <!-- Home screen -->
+
+    <!-- Home screen inner -->
+    <!-- Store update screen -->
+    <string name="store_update_screen_store_name_placeholder">ej. La Dulceria Feliz</string>
+    <string name="store_update_screen_store_desc_placeholder">ej. La Dulceria Feliz es una tienda donde se venden dulces de todo tipo para hacer tu dia mas ameno en CUCEI</string>
+    <string name="store_update_screen_store_email_placeholder">ej. dulceriafeliz@email.com</string>
+    <string name="store_update_screen_store_phone_placeholder">ej. 1234567890</string>
+    <string name="store_update_screen_title">Actualizar tienda</string>
+    <string name="store_update_screen_select_image_label">Imagen representativa de la tienda</string>
+    <string name="store_update_screen_pick_photo_button_text">Seleccionar una imagen</string>
+    <string name="store_update_screen_select_store_name_label">Nombre para la tienda</string>
+    <string name="store_update_screen_select_store_desc_label">Breve descripcion de la tienda</string>
+    <string name="store_update_screen_select_store_email_label">Correo electronico de la tienda</string>
+    <string name="store_update_screen_select_store_phone_label">Numero de telefono de la tienda</string>
+    <string name="store_update_screen_submit_button_text">Actualizar</string>
+    <!-- Store update screen information -->
+    <string name="store_update_information_screen_title">Acerca de actualizar la tienda</string>
+    <string name="store_update_information_screen_considerations">Consideraciones</string>
+    <string name="store_update_information_screen_recommendations">Recomendaciones</string>
+    <!-- Store update screen information restrictions -->
+    <string name="store_update_information_screen_name_restriction">El nombre debe tener entre %1$d y %2$d caracteres</string>
+    <string name="store_update_information_screen_desc_restriction">La descripcion debe tener entre %1$d y %2$d caracteres</string>
+    <string name="store_update_information_screen_email_restriction">El correo electronico debe tener como maximo %1$d caracteres</string>
+    <string name="store_update_information_screen_phone_restriction">El numero de telefono debe tener como maximo %1$d caracteres</string>
+    <string name="store_update_information_screen_active_orders_restriction">Si la tienda tiene pedidos activos, se restringe la actualizacion</string>
+    <!-- Store update screen information recommendations -->
+    <string name="store_update_information_screen_image_recommendation1">Sube un logo representativo de la tienda</string>
+    <string name="store_update_information_screen_image_recommendation2">Procura que el logo sea de alta calidad</string>
+
+    <!-- Category Screen -->
+    <!-- Category tab navigation -->
+    <string name="category_screen_tab_navigation_add">Agregar</string>
+    <string name="category_screen_tab_navigation_update">Actualizar</string>
+    <string name="category_screen_tab_navigation_delete">Eliminar</string>
+    <string name="category_screen_tab_navigation_visualize">Visualizar</string>
+    <string name="category_screen_tab_navigation_visualize_general">General</string>
+    <!-- Category tab navigation content description -->
+    <string name="category_screen_tab_navigation_add_content_desc">Category navigation tab for add</string>
+    <string name="category_screen_tab_navigation_update_content_desc">Category navigation tab for update</string>
+    <string name="category_screen_tab_navigation_delete_content_desc">Category navigation tab for delete</string>
+    <string name="category_screen_tab_navigation_visualize_content_desc">Category navigation tab for visualize</string>
+    <string name="category_screen_tab_navigation_visualize_general_content_desc">Category navigation tab for visualize general</string>
+    <!-- Category tab add -->
+    <!-- Category tab update -->
+    <!-- Category tab delete -->
+    <!-- Category tab delete restrictions -->
+    <string name="category_screen_tab_delete_restriction">La categoria no se puede eliminar si hay productos relacionados, primero actualiza la categoria para esos productos</string>
+
+    <!-- Location Screen -->
+    <!-- Location tab navigation -->
+    <string name="location_screen_tab_navigation_add">Agregar</string>
+    <string name="location_screen_tab_navigation_update">Actualizar</string>
+    <string name="location_screen_tab_navigation_delete">Eliminar</string>
+    <string name="location_screen_tab_navigation_visualize">Visualizar</string>
+    <!-- Location tab navigation content description -->
+    <string name="location_screen_tab_navigation_add_content_desc">Location navigation tab for add</string>
+    <string name="location_screen_tab_navigation_update_content_desc">Location navigation tab for update</string>
+    <string name="location_screen_tab_navigation_delete_content_desc">Location navigation tab for delete</string>
+    <string name="location_screen_tab_navigation_visualize_content_desc">Location navigation tab for visualize</string>
+    <!-- Location tab add -->
+    <!-- Location tab update -->
+    <!-- Location tab delete -->
+    <!-- Location tab delete restrictions -->
+    <string name="location_screen_tab_delete_restriction">La direccion no se puede eliminar si hay pedidos activos relacionados a la direccion de entrega</string>
+
+    <!-- Discount Screen -->
+    <!-- Discount tab navigation -->
+    <string name="discount_screen_tab_navigation_add">Agregar</string>
+    <string name="discount_screen_tab_navigation_update">Actualizar</string>
+    <string name="discount_screen_tab_navigation_delete">Eliminar</string>
+    <string name="discount_screen_tab_navigation_visualize">Visualizar</string>
+    <!-- Discount tab navigation content description -->
+    <string name="discount_screen_tab_navigation_add_content_desc">Discount navigation tab for add</string>
+    <string name="discount_screen_tab_navigation_update_content_desc">Discount navigation tab for update</string>
+    <string name="discount_screen_tab_navigation_delete_content_desc">Discount navigation tab for delete</string>
+    <string name="discount_screen_tab_navigation_visualize_content_desc">Discount navigation tab for visualize</string>
+    <!-- Discount tab add -->
+    <!-- Discount tab update -->
+    <!-- Discount tab delete -->
+
+    <!-- Product Screen -->
+    <!-- Product tab navigation -->
+    <string name="product_screen_tab_navigation_add">Agregar</string>
+    <string name="product_screen_tab_navigation_update">Actualizar</string>
+    <string name="product_screen_tab_navigation_delete">Eliminar</string>
+    <string name="product_screen_tab_navigation_visualize">Visualizar</string>
+    <!-- Product tab navigation content description -->
+    <string name="product_screen_tab_navigation_add_content_desc">Product navigation tab for add</string>
+    <string name="product_screen_tab_navigation_update_content_desc">Product navigation tab for update</string>
+    <string name="product_screen_tab_navigation_delete_content_desc">Product navigation tab for delete</string>
+    <string name="product_screen_tab_navigation_visualize_content_desc">Product navigation tab for visualize</string>
+    <!-- Product tab add -->
+    <!-- Product tab update -->
+    <!-- Product tab delete -->
+    <!-- Product tab delete restrictions -->
+    <string name="product_screen_tab_delete_restriction">El producto no se puede eliminar si aparece en pedidos activos</string>
+
+    <!-- Login screen -->
+    <string name="login_screen_app_main_logo_content_desc"> Application main logo</string>
+    <string name="login_screen_screen_desc">Crea una cuenta o inicia sesion en Buena Cocina para comenzar</string>
+    <string name="login_screen_login_button_text">Comenzar</string>
+    <string name="login_screen_iam_msg">Seras redirigido para crear una cuenta o iniciar sesion a traves de un sistema IAM</string>
+
+    <!-- Profile screen -->
+    <string name="profile_screen_no_nickname_msg">Error al cargar el nombre</string>
+    <string name="profile_screen_no_email_msg">Error al cargar el correo electronico</string>
+    <string name="profile_screen_user_image_content_desc">User profile image</string>
+    <string name="profile_screen_is_email_verified_text">Correo de cuenta verificado</string>
+    <string name="profile_screen_is_email_verified_yes_msg">Si</string>
+    <string name="profile_screen_is_email_verified_no_msg">No</string>
+    <string name="profile_screen_logout_button_text">Cerrar sesion</string>
+</resources>
