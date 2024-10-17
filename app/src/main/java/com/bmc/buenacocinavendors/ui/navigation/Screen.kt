@@ -24,23 +24,37 @@ sealed interface Screen {
     sealed class MainSerializable : Screen {
         @Serializable
         data class StoreUpdate(val storeId: String) : MainSerializable()
+
         @Serializable
         data class StoreVisualizer(val storeId: String) : MainSerializable()
+
         @Serializable
         data class Category(val storeId: String) : MainSerializable()
+
         @Serializable
-        data class CategoryDetailed(val categoryId: String, val storeId: String) : MainSerializable()
+        data class CategoryDetailed(val categoryId: String, val storeId: String) :
+            MainSerializable()
+
         @Serializable
         data class CategoryGeneralDetailed(val categoryId: String) : MainSerializable()
+
         @Serializable
         data class Location(val storeId: String) : MainSerializable()
+
         @Serializable
         data class Discount(val storeId: String) : MainSerializable()
+
         @Serializable
-        data class DiscountDetailed(val discountId: String, val storeId: String) : MainSerializable()
+        data class DiscountDetailed(val discountId: String, val storeId: String) :
+            MainSerializable()
+
         @Serializable
         data class Product(val storeId: String, val storeName: String) : MainSerializable()
+
         @Serializable
         data class OrderDetailed(val orderId: String) : MainSerializable()
+
+        @Serializable
+        data class ChatDetailed(val channelId: String) : MainSerializable()
     }
 }

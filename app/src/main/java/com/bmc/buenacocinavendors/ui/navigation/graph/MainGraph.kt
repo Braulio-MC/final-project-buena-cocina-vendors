@@ -6,10 +6,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.bmc.buenacocinavendors.ui.navigation.Graph
 import com.bmc.buenacocinavendors.ui.navigation.Screen
+import io.getstream.chat.android.compose.viewmodel.channels.ChannelViewModelFactory
 
 @Composable
 fun MainGraph(
     windowSizeClass: WindowSizeClass,
+    channelViewModelFactory: ChannelViewModelFactory,
     navController: NavHostController,
     onStoreUpdateBackButton: () -> Unit,
     onStoreUpdateInformationBackButton: () -> Unit,
@@ -23,6 +25,8 @@ fun MainGraph(
     onProductBackButton: () -> Unit,
     onOrderBackButton: () -> Unit,
     onOrderDetailedBackButton: () -> Unit,
+    onChatBackButton: () -> Unit,
+    onDetailedChatBackButton: () -> Unit,
     onLogoutButton: (Boolean) -> Unit
 ) {
     NavHost(
@@ -31,6 +35,7 @@ fun MainGraph(
     ) {
         mainGraph(
             windowSizeClass = windowSizeClass,
+            channelViewModelFactory = channelViewModelFactory,
             onStoreUpdateButton = { storeId ->
                 navController.navigate(Screen.MainSerializable.StoreUpdate(storeId)) {
                     launchSingleTop = true
@@ -212,6 +217,21 @@ fun MainGraph(
                 }
             },
             onOrderDetailedBackButton = onOrderDetailedBackButton,
+            onOrderDetailedChannelCreatedSuccessful = { channelId ->
+                navController.navigate(Screen.MainSerializable.ChatDetailed(channelId)) {
+                    popUpTo(Screen.Main.Order.route) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
+            },
+            onChatBackButton = onChatBackButton,
+            onChatItemClick = { channel ->
+                navController.navigate(Screen.MainSerializable.ChatDetailed(channel.cid)) {
+                    launchSingleTop = true
+                }
+            },
+            onDetailedChatBackButton = onDetailedChatBackButton,
             onLogoutButton = onLogoutButton
         )
     }

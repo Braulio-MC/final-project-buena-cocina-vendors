@@ -32,16 +32,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.auth0.android.result.UserProfile
 import com.bmc.buenacocinavendors.R
 import com.bmc.buenacocinavendors.core.NetworkStatus
 
 @Composable
 fun LoginScreenExpanded(
     netState: NetworkStatus,
-    onLoginButton: (Boolean) -> Unit,
+    onLoginButton: (Boolean, UserProfile?) -> Unit,
     isLoginButtonEnabled: Boolean,
     updateEnableLoginButton: (Boolean) -> Unit,
-    onStartLogin: (Context, () -> Unit, () -> Unit) -> Unit
+    onStartLogin: (Context, () -> Unit, (UserProfile) -> Unit) -> Unit
 ) {
     val currentContext = LocalContext.current
 
@@ -104,9 +105,9 @@ fun LoginScreenExpanded(
                             onStartLogin(currentContext, {  // On login error
                                 // Login process failed, button needs to be available
                                 updateEnableLoginButton(true)
-                                onLoginButton(false)
-                            }, { // On login success
-                                onLoginButton(true)
+                                onLoginButton(false, null)
+                            }, { userProfile -> // On login success
+                                onLoginButton(true, userProfile)
                             })
                         },
                         enabled = isLoginButtonEnabled,

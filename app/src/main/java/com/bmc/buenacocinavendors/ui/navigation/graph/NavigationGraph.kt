@@ -11,23 +11,26 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.auth0.android.result.UserProfile
 import com.bmc.buenacocinavendors.ui.navigation.Graph
 import com.bmc.buenacocinavendors.ui.navigation.NavigationState
 import com.bmc.buenacocinavendors.ui.navigation.Screen
 import com.bmc.buenacocinavendors.ui.screen.MainScreen
 import com.bmc.buenacocinavendors.ui.screen.common.NavigationStateLoading
 import com.bmc.buenacocinavendors.ui.viewmodel.NavigationViewModel
+import io.getstream.chat.android.compose.viewmodel.channels.ChannelViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun NavigationGraph(
     windowSizeClass: WindowSizeClass,
+    channelViewModelFactory: ChannelViewModelFactory,
     navController: NavHostController = rememberNavController(),
     viewModel: NavigationViewModel = hiltViewModel(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     onFinishActivity: () -> Unit,
-    onHasStore: (String) -> Unit
+    onHasStore: (String, UserProfile?) -> Unit
 ) {
     val result by produceState<NavigationState>(initialValue = NavigationState.Loading) {
         value = viewModel.checkNavigationState()
@@ -61,12 +64,12 @@ fun NavigationGraph(
     ) {
         authGraph(
             windowSizeClass = windowSizeClass,
-            onLoginButton = { isSuccessful->
+            onLoginButton = { isSuccessful, userProfile ->
                 if (isSuccessful) {
                     coroutineScope.launch {
                         val state = viewModel.checkNavigationState()
                         if (state is NavigationState.HasStore) {
-                            onHasStore(state.storeId)
+                            onHasStore(state.storeId, userProfile)
                             navController.navigate(Graph.Main.MainGraph.route) {
                                 popUpTo(Graph.Auth.AuthGraph.route) {
                                     inclusive = true
@@ -108,7 +111,7 @@ fun NavigationGraph(
                 }
             },
             onRegistrationFormSuccessfulRegistration = {
-                navController.navigate(Graph.Main.MainGraph.route) {
+                navController.navigate(Graph.Auth.AuthGraph.route) {
                     popUpTo(Graph.StoreRegistration.StoreRegistrationGraph.route) {
                         inclusive = true
                     }
@@ -127,6 +130,7 @@ fun NavigationGraph(
         composable(Graph.Main.MainGraph.route) {
             MainScreen(
                 windowSizeClass = windowSizeClass,
+                channelViewModelFactory = channelViewModelFactory,
                 onLogoutButton = { isSuccessful ->
                     if (isSuccessful) {
                         navController.navigate(Graph.Auth.AuthGraph.route) {

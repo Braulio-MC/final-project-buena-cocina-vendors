@@ -5,14 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.bmc.buenacocinavendors.core.NetworkStatus
 import com.bmc.buenacocinavendors.core.OrderStatus
 import com.bmc.buenacocinavendors.core.SHARING_COROUTINE_TIMEOUT_IN_SEC
-import com.bmc.buenacocinavendors.data.network.dto.CreateMessageDto
-import com.bmc.buenacocinavendors.data.network.dto.UpdateOrderDto
 import com.bmc.buenacocinavendors.domain.repository.ConnectivityRepository
 import com.bmc.buenacocinavendors.domain.repository.OrderRepository
 import com.bmc.buenacocinavendors.domain.Result
+import com.bmc.buenacocinavendors.domain.error.DataError
 import com.bmc.buenacocinavendors.domain.mapper.asFormErrorUiText
-import com.bmc.buenacocinavendors.domain.repository.MessagingRepository
 import com.bmc.buenacocinavendors.domain.repository.OrderLineRepository
+import com.bmc.buenacocinavendors.domain.usecase.CreateGetStreamChannel
+import com.bmc.buenacocinavendors.domain.usecase.SendOrderStatusNotificationToSpecificUserDevices
+import com.bmc.buenacocinavendors.domain.usecase.UpdateOrderStatus
 import com.bmc.buenacocinavendors.domain.usecase.ValidateOrderStatus
 import com.bmc.buenacocinavendors.ui.screen.order.detailed.DetailedOrderIntent
 import com.bmc.buenacocinavendors.ui.screen.order.detailed.DetailedOrderUiResultState
@@ -35,8 +36,10 @@ import kotlinx.coroutines.launch
 @HiltViewModel(assistedFactory = DetailedOrderViewModel.DetailedOrderViewModelFactory::class)
 class DetailedOrderViewModel @AssistedInject constructor(
     private val validateStatus: ValidateOrderStatus,
-    private val orderRepository: OrderRepository,
-    private val messagingRepository: MessagingRepository,
+    private val sendOrderStatusNotificationToSpecificUserDevices: SendOrderStatusNotificationToSpecificUserDevices,
+    private val updateOrderStatus: UpdateOrderStatus,
+    private val createGetStreamChannel: CreateGetStreamChannel,
+    orderRepository: OrderRepository,
     orderLineRepository: OrderLineRepository,
     connectivityRepository: ConnectivityRepository,
     @Assisted private val orderId: String
@@ -49,7 +52,8 @@ class DetailedOrderViewModel @AssistedInject constructor(
         _order,
         _orderLines
     ) { order, orderLines ->
-        val status = OrderStatus.entries.find { it.status == order?.status } ?: OrderStatus.UNASSIGNED
+        val status =
+            OrderStatus.entries.find { it.status == order?.status } ?: OrderStatus.UNASSIGNED
         _resultState.update { currentState ->
             currentState.copy(status = status)
         }
@@ -66,7 +70,7 @@ class DetailedOrderViewModel @AssistedInject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(SHARING_COROUTINE_TIMEOUT_IN_SEC),
-            initialValue = NetworkStatus.Unavailable
+            initialValue = NetworkStatus.Unknown
         )
     private val _validationEvent = Channel<ValidateEvent>()
     val validationEvent = _validationEvent.receiveAsFlow()
@@ -79,8 +83,38 @@ class DetailedOrderViewModel @AssistedInject constructor(
                 }
             }
 
+            DetailedOrderIntent.CreateChannel -> {
+                createChannel()
+            }
+
             DetailedOrderIntent.Submit -> {
                 submit()
+            }
+        }
+    }
+
+    private fun createChannel() {
+        uiState.value.order?.let { order ->
+            _resultState.update { currentState ->
+                currentState.copy(isWaitingForChannelResult = true)
+            }
+            viewModelScope.launch {
+                val result = createGetStreamChannel(
+                    orderId = order.id,
+                    storeOwnerId = order.store.ownerId,
+                    storeName = order.store.name,
+                    userId = order.user.id,
+                    userName = order.user.name
+                )
+                when (result) {
+                    is Result.Error -> {
+                        processCreateChannelFailed(result.error)
+                    }
+
+                    is Result.Success -> {
+                        processCreateChannelSuccess(result.data)
+                    }
+                }
             }
         }
     }
@@ -101,67 +135,66 @@ class DetailedOrderViewModel @AssistedInject constructor(
         }
 
         _resultState.update { currentState ->
-            currentState.copy(isWaitingForResult = true)
+            currentState.copy(isWaitingForStatusResult = true)
         }
-        val dto = UpdateOrderDto(
-            status = _resultState.value.status.status
-        )
-        try {
-            val messageDto = makeCreateMessageDto()
-            orderRepository.update(
-                orderId,
-                dto,
-                onSuccess = {
-                    messagingRepository.sendMessageToTopic(
-                        orderId,
-                        messageDto,
+        updateOrderStatus(
+            orderId,
+            _resultState.value.status.status,
+            onSuccess = {
+                uiState.value.order?.let { order ->
+                    sendOrderStatusNotificationToSpecificUserDevices(
+                        userId = order.user.id,
+                        storeName = order.store.name,
+                        orderStatus = _resultState.value.status.status,
                         onSuccess = {
-                            processSuccess()
+                            processUpdateStatusSuccess()
                         },
                         onFailure = { e ->
-                            processFailure(e)
+                            processUpdateStatusFailure(e)
                         }
                     )
-                    processSuccess()
-                },
-                onFailure = { e ->
-                    processFailure(e)
                 }
-            )
-        } catch (e: Exception) {
-            processFailure(e)
-        }
-    }
-
-    private fun processSuccess() {
-        viewModelScope.launch {
-            _resultState.update { currentState ->
-                currentState.copy(isWaitingForResult = false)
+            },
+            onFailure = { e ->
+                processUpdateStatusFailure(e)
             }
-            _validationEvent.send(ValidateEvent.Success)
-        }
-    }
-
-    private fun processFailure(e: Exception) {
-        viewModelScope.launch {
-            _resultState.update { currentState ->
-                currentState.copy(isWaitingForResult = false)
-            }
-            _validationEvent.send(ValidateEvent.Failure(e))
-        }
-    }
-
-    private fun makeCreateMessageDto(): CreateMessageDto {
-        if (uiState.value.order == null) {
-            throw Exception("Order is null") // Custom exception here
-        }
-        return CreateMessageDto(
-            notification = CreateMessageDto.CreateMessageNotificationDto(
-                title = "Actualización de tu pedido en ${uiState.value.order!!.store.name}",
-                body = "Tu pedido se encuentra en estado: ${_resultState.value.status.status}"
-            ),
-            data = hashMapOf()
         )
+    }
+
+    private fun processCreateChannelSuccess(channelId: String) {
+        viewModelScope.launch {
+            _resultState.update { currentState ->
+                currentState.copy(isWaitingForChannelResult = false)
+            }
+            _validationEvent.send(ValidateEvent.CreateChannelSuccess(channelId))
+        }
+    }
+
+    private fun processCreateChannelFailed(e: DataError) {
+        viewModelScope.launch {
+            _resultState.update { currentState ->
+                currentState.copy(isWaitingForChannelResult = false)
+            }
+            _validationEvent.send(ValidateEvent.CreateChannelFailure(e))
+        }
+    }
+
+    private fun processUpdateStatusSuccess() {
+        viewModelScope.launch {
+            _resultState.update { currentState ->
+                currentState.copy(isWaitingForStatusResult = false)
+            }
+            _validationEvent.send(ValidateEvent.UpdateStatusSuccess)
+        }
+    }
+
+    private fun processUpdateStatusFailure(e: Exception) {
+        viewModelScope.launch {
+            _resultState.update { currentState ->
+                currentState.copy(isWaitingForStatusResult = false)
+            }
+            _validationEvent.send(ValidateEvent.UpdateStatusFailure(e))
+        }
     }
 
     @AssistedFactory
@@ -170,7 +203,9 @@ class DetailedOrderViewModel @AssistedInject constructor(
     }
 
     sealed interface ValidateEvent {
-        data object Success : ValidateEvent
-        data class Failure(val error: Exception) : ValidateEvent
+        data object UpdateStatusSuccess : ValidateEvent
+        data class UpdateStatusFailure(val error: Exception) : ValidateEvent
+        data class CreateChannelSuccess(val channelId: String) : ValidateEvent
+        data class CreateChannelFailure(val error: DataError) : ValidateEvent
     }
 }

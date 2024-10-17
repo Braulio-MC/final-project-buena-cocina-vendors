@@ -4,6 +4,11 @@
     <!-- Auth0 -->
     <string name="com_auth0_scheme">app</string>
 
+    <!-- Get Stream -->
+
+    <!-- Api server -->
+    <string name="base_api_server_url">http://10.0.2.2:5001</string>
+
     <!-- Common -->
     <string name="common_no_internet_error">No hay conexion a internet\n\nComprueba tu fuente de internet y vuelve a intentarlo</string>
 
@@ -65,7 +70,7 @@
     <!-- Navigation -->
     <string name="navigation_home">Inicio</string>
     <string name="navigation_order">Pedidos</string>
-    <string name="navigation_chat">Chat</string>
+    <string name="navigation_chat">Mensajes</string>
     <string name="navigation_profile">Perfil</string>
     <string name="navigation_home_content_desc">Navigation item for home</string>
     <string name="navigation_order_content_desc">Navigation item for order</string>

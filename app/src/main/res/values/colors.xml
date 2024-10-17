@@ -14,6 +14,6 @@
     <color name="order_status_progress">#FFEB3B</color>
     <color name="order_status_way">#FFC107</color>
     <color name="order_status_arrived">#FF9800</color>
-    <color name="order_status_cancelled">#FF5722</color>
     <color name="order_status_error">#E91E1E</color>
+    <color name="order_status_unassigned">#607D8B</color>
 </resources>

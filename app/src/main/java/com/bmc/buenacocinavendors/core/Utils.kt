@@ -54,8 +54,20 @@ fun getOrderStatusColor(status: String): Int {
         OrderStatus.PROGRESS.status -> R.color.order_status_progress
         OrderStatus.ON_WAY.status -> R.color.order_status_way
         OrderStatus.DELIVERED.status -> R.color.order_status_arrived
-        OrderStatus.CANCELLED.status -> R.color.order_status_cancelled
-        else -> R.color.order_status_error
+        OrderStatus.ERROR.status -> R.color.order_status_error
+        else -> R.color.order_status_unassigned
+    }
+}
+
+fun getOrderStatusLevel(status: String): Int {
+    return when (status) {
+        OrderStatus.CREATED.status -> ORDER_STATUS_CREATED_LEVEL
+        OrderStatus.ACTIVE.status -> ORDER_STATUS_ACTIVE_LEVEL
+        OrderStatus.PROGRESS.status -> ORDER_STATUS_PROGRESS_LEVEL
+        OrderStatus.ON_WAY.status -> ORDER_STATUS_ON_WAY_LEVEL
+        OrderStatus.DELIVERED.status -> ORDER_STATUS_DELIVERED_LEVEL
+        OrderStatus.ERROR.status -> ORDER_STATUS_ERROR_LEVEL
+        else -> ORDER_STATUS_UNASSIGNED_LEVEL
     }
 }
 

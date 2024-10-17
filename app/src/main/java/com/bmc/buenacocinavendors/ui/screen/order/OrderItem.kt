@@ -59,6 +59,7 @@ fun OrderItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Max)
+            .padding(5.dp)
     ) {
         Row(
             modifier = Modifier
@@ -89,7 +90,7 @@ fun OrderItem(
                     .weight(2f)
             ) {
                 Text(
-                    text = order.deliveryLocation.name,
+                    text = "Informacion",
                     textAlign = TextAlign.Start,
                     color = Color.Black,
                     fontSize = 15.sp,
@@ -255,12 +256,13 @@ fun OrderItemPreview() {
             order = OrderDomain(
                 id = "oWqou7mmtNdLY0aT3Z7B",
                 status = OrderStatus.CREATED.status,
+                isRated = false,
                 user = OrderDomain.OrderUserDomain("1", "Braulio"),
                 deliveryLocation = OrderDomain.OrderDeliveryLocationDomain(
                     "1",
                     "Enfrente del Chedraui"
                 ),
-                store = OrderDomain.OrderStoreDomain("1", "La Cuchara Verde"),
+                store = OrderDomain.OrderStoreDomain("1", ownerId = "1", "La Cuchara Verde"),
                 paymentMethod = OrderDomain.OrderPaymentMethodDomain("1", "Tarjeta de credito"),
 //                orderLines = listOf(
 //                    OrderLineDomain(

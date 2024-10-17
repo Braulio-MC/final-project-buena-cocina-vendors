@@ -4,5 +4,6 @@ enum class NetworkStatus {
     Available,
     Unavailable,
     Losing,
-    Lost
+    Lost,
+    Unknown
 }

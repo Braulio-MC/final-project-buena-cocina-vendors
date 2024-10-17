@@ -320,27 +320,39 @@ fun CategoryTabVisualizerItemDetailedContent(
                             }
                         }
                     }
-                    if (products.itemCount == 0) {
-                        CategoryTabVisualizerItemProductsEmpty(categoryDomain = uiState.category)
-                    } else {
-                        when (products.loadState.refresh) {
-                            is LoadState.Error -> {
+                    Text(
+                        text = "Productos relacionados a ${uiState.category.name}",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                            .fillMaxWidth()
+                    )
+                    when (products.loadState.refresh) {
+                        is LoadState.Error -> {
 
-                            }
+                        }
 
-                            LoadState.Loading -> {
-                                LazyColumn(
-                                    modifier = Modifier
-                                        .padding(10.dp)
-                                        .heightIn(max = 1000.dp)
-                                ) {
-                                    items(CATEGORY_TAB_VISUALIZER_ITEM_DETAILED_SHIMMER_ITEM_COUNT) {
-                                        CategoryTabVisualizerItemProductShimmer()
-                                    }
+                        LoadState.Loading -> {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .heightIn(max = 1000.dp)
+                            ) {
+                                items(CATEGORY_TAB_VISUALIZER_ITEM_DETAILED_SHIMMER_ITEM_COUNT) {
+                                    CategoryTabVisualizerItemProductShimmer()
                                 }
                             }
+                        }
 
-                            is LoadState.NotLoading -> {
+                        is LoadState.NotLoading -> {
+                            if (products.itemCount == 0) {
+                                CategoryTabVisualizerItemProductsEmpty(categoryDomain = uiState.category)
+                            } else {
                                 LazyColumn(
                                     modifier = Modifier
                                         .padding(10.dp)

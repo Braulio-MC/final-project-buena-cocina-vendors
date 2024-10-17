@@ -28,10 +28,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.bmc.buenacocinavendors.ui.navigation.NavDestination
 import com.bmc.buenacocinavendors.ui.navigation.graph.MainGraph
+import io.getstream.chat.android.compose.viewmodel.channels.ChannelViewModelFactory
 
 @Composable
 fun MainScreen(
     windowSizeClass: WindowSizeClass,
+    channelViewModelFactory: ChannelViewModelFactory,
     navController: NavHostController = rememberNavController(),
     onLogoutButton: (Boolean) -> Unit
 ) {
@@ -41,6 +43,7 @@ fun MainScreen(
 
     MainScreenContent(
         wsc = windowSizeClass,
+        channelViewModelFactory = channelViewModelFactory,
         adaptiveInfo = adaptiveInfo,
         navController = navController,
         currentRoute = currentRoute,
@@ -52,6 +55,7 @@ fun MainScreen(
 @Composable
 fun MainScreenContent(
     wsc: WindowSizeClass,
+    channelViewModelFactory: ChannelViewModelFactory,
     adaptiveInfo: WindowAdaptiveInfo,
     navController: NavHostController,
     currentRoute: String?,
@@ -79,45 +83,28 @@ fun MainScreenContent(
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             NavDestination.entries.forEach { destination ->
-//                val selected =
-//                    currentDestination?.hierarchy?.any { it.route == destination.route } == true
                 item(
                     selected = currentRoute == destination.route,
                     onClick = {
                         if (currentRoute != destination.route) {
                             navController.navigate(destination.route) {
-                                popUpTo(destination.route) {
-
-                                }
+                                popUpTo(NavDestination.HOME.route)
                                 launchSingleTop = true
                             }
                         }
                     },
                     icon = {
-                        BadgedBox(
-                            badge = {
-                                Badge {
-                                    Text(
-                                        text = "5",
-                                        fontSize = 15.sp,
-                                        fontWeight = FontWeight.W400,
-                                        color = Color.White
-                                    )
-                                }
-                            }
-                        ) {
-                            Icon(
-                                imageVector = if (currentRoute == destination.route) {
-                                    destination.selectedIcon
-                                } else {
-                                    destination.unselectedIcon
-                                },
-                                contentDescription = stringResource(id = destination.contentDescription),
-                                tint = Color.Black,
-                                modifier = Modifier
-                                    .size(30.dp)
-                            )
-                        }
+                        Icon(
+                            imageVector = if (currentRoute == destination.route) {
+                                destination.selectedIcon
+                            } else {
+                                destination.unselectedIcon
+                            },
+                            contentDescription = stringResource(id = destination.contentDescription),
+                            tint = Color.Black,
+                            modifier = Modifier
+                                .size(30.dp)
+                        )
                     },
                     label = {
                         Text(
@@ -135,19 +122,22 @@ fun MainScreenContent(
     ) {
         MainGraph(
             windowSizeClass = wsc,
+            channelViewModelFactory = channelViewModelFactory,
             navController = navController,
-            onStoreUpdateBackButton = { popBackStack() },
-            onStoreUpdateInformationBackButton = { popBackStack() },
-            onStoreVisualizerBackButton = { popBackStack() },
-            onCategoryBackButton = { popBackStack() },
-            onCategoryVisualizerItemDetailedBackButton = { popBackStack() },
-            onCategoryGeneralItemDetailedBackButton = { popBackStack() },
-            onLocationBackButton = { popBackStack() },
-            onDiscountBackButton = { popBackStack() },
-            onDiscountVisualizerItemDetailedBackButton = { popBackStack() },
-            onProductBackButton = { popBackStack() },
-            onOrderBackButton = { popBackStack() },
-            onOrderDetailedBackButton = { popBackStack() },
+            onStoreUpdateBackButton = popBackStack,
+            onStoreUpdateInformationBackButton = popBackStack,
+            onStoreVisualizerBackButton = popBackStack,
+            onCategoryBackButton = popBackStack,
+            onCategoryVisualizerItemDetailedBackButton = popBackStack,
+            onCategoryGeneralItemDetailedBackButton = popBackStack,
+            onLocationBackButton = popBackStack,
+            onDiscountBackButton = popBackStack,
+            onDiscountVisualizerItemDetailedBackButton = popBackStack,
+            onProductBackButton = popBackStack,
+            onOrderBackButton = popBackStack,
+            onOrderDetailedBackButton = popBackStack,
+            onChatBackButton = popBackStack,
+            onDetailedChatBackButton = popBackStack,
             onLogoutButton = onLogoutButton
         )
     }

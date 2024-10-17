@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.2"
+agp = "8.7.1"
 kotlin = "1.9.24"
 kotlinSerialization = "1.9.24"
 ksp = "1.9.24-1.0.20"
@@ -9,7 +9,7 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.4"
 activityCompose = "1.9.1"
-composeBom = "2024.06.00"
+composeBom = "2024.08.00"
 composeNavigation = "2.8.0-beta06"
 composeDaggerHilt = "1.2.0"
 composeCoil = "2.6.0"
@@ -25,12 +25,14 @@ paging3 = "3.3.2"
 skydovesSandwich = "2.0.7"
 auth0Sdk = "2.10.2"
 splashScreen = "1.0.1"
-adaptiveNavigationSuite = "1.3.0-beta05"
+adaptiveNavigationSuite = "1.3.0-rc01"
 documentFile = "1.0.1"
-material3 = "1.3.0-beta05"
+material3 = "1.3.0-rc01"
 getstream = "6.0.8"
-firebaseBom = "33.1.2"
+getStreamPush = "1.1.8"
+firebaseBom = "33.2.0"
 googleServices = "4.4.2"
+securityCrypto = "1.1.0-alpha06"
 
 
 [libraries]
@@ -47,6 +49,7 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentFile" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen" }
@@ -77,6 +80,7 @@ github-skydoves-sandwich-retrofit = { group = "com.github.skydoves", name = "san
 auth0-sdk = { group = "com.auth0.android", name = "auth0", version.ref = "auth0Sdk" }
 getstream-compose-chat = { group = "io.getstream", name = "stream-chat-android-compose", version.ref = "getstream" }
 getstream-chat-offline = { group = "io.getstream", name = "stream-chat-android-offline", version.ref = "getstream" }
+getstream-push-firebase = { group = "io.getstream", name = "stream-android-push-firebase", version.ref = "getStreamPush" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import com.bmc.buenacocinavendors.ui.navigation.Graph
 import com.bmc.buenacocinavendors.ui.navigation.Screen
 import com.bmc.buenacocinavendors.ui.screen.chat.ChatScreen
+import com.bmc.buenacocinavendors.ui.screen.chat.DetailedChatScreen
 import com.bmc.buenacocinavendors.ui.screen.home.HomeScreen
 import com.bmc.buenacocinavendors.ui.screen.home.inner.category.CategoryScreen
 import com.bmc.buenacocinavendors.ui.screen.home.inner.category.tabs.general.detailed.CategoryTabGeneralItemDetailed
@@ -23,9 +24,12 @@ import com.bmc.buenacocinavendors.ui.screen.home.inner.store.visualizer.StoreVis
 import com.bmc.buenacocinavendors.ui.screen.order.OrderScreen
 import com.bmc.buenacocinavendors.ui.screen.order.detailed.DetailedOrderScreen
 import com.bmc.buenacocinavendors.ui.screen.profile.ProfileScreen
+import io.getstream.chat.android.compose.viewmodel.channels.ChannelViewModelFactory
+import io.getstream.chat.android.models.Channel
 
 fun NavGraphBuilder.mainGraph(
     windowSizeClass: WindowSizeClass,
+    channelViewModelFactory: ChannelViewModelFactory,
     onStoreUpdateButton: (String) -> Unit,
     onStoreUpdateSuccessful: () -> Unit,
     onStoreUpdateBackButton: () -> Unit,
@@ -62,6 +66,10 @@ fun NavGraphBuilder.mainGraph(
     onOrderBackButton: () -> Unit,
     onOrderItemClick: (String) -> Unit,
     onOrderDetailedBackButton: () -> Unit,
+    onOrderDetailedChannelCreatedSuccessful: (String) -> Unit,
+    onChatBackButton: () -> Unit,
+    onChatItemClick: (Channel) -> Unit,
+    onDetailedChatBackButton: () -> Unit,
     onLogoutButton: (Boolean) -> Unit,
 ) {
     navigation(
@@ -141,10 +149,18 @@ fun NavGraphBuilder.mainGraph(
         )
         orderDetailedScreen(
             windowSizeClass,
+            onChannelCreatedSuccessful = onOrderDetailedChannelCreatedSuccessful,
             onBackButton = onOrderDetailedBackButton
 
         )
-        chatScreen()
+        chatScreen(
+            viewModel = channelViewModelFactory,
+            onItemClick = onChatItemClick,
+            onBackButton = onChatBackButton
+        )
+        detailedChatScreen(
+            onBackButton = onDetailedChatBackButton
+        )
         profileScreen(
             windowSizeClass = windowSizeClass,
             onLogoutButton = onLogoutButton
@@ -374,6 +390,7 @@ fun NavGraphBuilder.orderScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.orderDetailedScreen(
     windowSizeClass: WindowSizeClass,
+    onChannelCreatedSuccessful: (String) -> Unit,
     onBackButton: () -> Unit
 ) {
     composable<Screen.MainSerializable.OrderDetailed> {
@@ -381,18 +398,38 @@ fun NavGraphBuilder.orderDetailedScreen(
         DetailedOrderScreen(
             windowSizeClass = windowSizeClass,
             orderId = result.orderId,
+            onChannelCreatedSuccessful = onChannelCreatedSuccessful,
             onBackButton = onBackButton
         )
     }
 }
 
 fun NavGraphBuilder.chatScreen(
-
+    viewModel: ChannelViewModelFactory,
+    onItemClick: (Channel) -> Unit,
+    onBackButton: () -> Unit
 ) {
     composable(Screen.Main.Chat.route) {
-        ChatScreen()
+        ChatScreen(
+            viewModel = viewModel,
+            onItemClick = onItemClick,
+            onBackButton = onBackButton
+        )
     }
 }
+
+fun NavGraphBuilder.detailedChatScreen(
+    onBackButton: () -> Unit
+) {
+    composable<Screen.MainSerializable.ChatDetailed> {
+        val nav = it.toRoute<Screen.MainSerializable.ChatDetailed>()
+        DetailedChatScreen(
+            channelId = nav.channelId,
+            onBackButton = onBackButton
+        )
+    }
+}
+
 
 fun NavGraphBuilder.profileScreen(
     windowSizeClass: WindowSizeClass,

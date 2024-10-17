@@ -42,6 +42,7 @@ fun DetailedOrderScreen(
     scrollState: ScrollState = rememberScrollState(),
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState),
     orderStatusSheetState: SheetState = rememberModalBottomSheetState(),
+    onChannelCreatedSuccessful: (String) -> Unit,
     onBackButton: () -> Unit
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -58,16 +59,27 @@ fun DetailedOrderScreen(
     LaunchedEffect(key1 = currentContext) {
         viewModel.validationEvent.collect { event ->
             when (event) {
-                is DetailedOrderViewModel.ValidateEvent.Failure -> {
+                is DetailedOrderViewModel.ValidateEvent.UpdateStatusFailure -> {
                     Log.e("DetailedOrderScreen", "Error ${event.error}")
                 }
 
-                DetailedOrderViewModel.ValidateEvent.Success -> {
+                DetailedOrderViewModel.ValidateEvent.UpdateStatusSuccess -> {
                     snackbarHostState.showSnackbar(
                         message = "Estado actualizado",
                         withDismissAction = true,
                         duration = SnackbarDuration.Short
                     )
+                }
+
+                is DetailedOrderViewModel.ValidateEvent.CreateChannelFailure -> {
+                    snackbarHostState.showSnackbar(
+                        message = "No se pudo crear el canal de mensajes",
+                        withDismissAction = true
+                    )
+                }
+
+                is DetailedOrderViewModel.ValidateEvent.CreateChannelSuccess -> {
+                    onChannelCreatedSuccessful(event.channelId)
                 }
             }
         }

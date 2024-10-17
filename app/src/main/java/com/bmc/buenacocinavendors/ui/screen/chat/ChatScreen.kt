@@ -1,8 +1,25 @@
 package com.bmc.buenacocinavendors.ui.screen.chat
 
 import androidx.compose.runtime.Composable
+import io.getstream.chat.android.compose.ui.channels.ChannelsScreen
+import io.getstream.chat.android.compose.ui.theme.ChatTheme
+import io.getstream.chat.android.compose.viewmodel.channels.ChannelViewModelFactory
+import io.getstream.chat.android.models.Channel
 
 @Composable
-fun ChatScreen() {
-
+fun ChatScreen(
+    viewModel: ChannelViewModelFactory,
+    onItemClick: (Channel) -> Unit,
+    onBackButton: () -> Unit,
+) {
+    ChatTheme {
+        ChannelsScreen(
+            viewModelFactory = viewModel,
+            title = "Mensajes",
+            isShowingHeader = true,
+            isShowingSearch = true,
+            onItemClick = onItemClick,
+            onBackPressed = onBackButton
+        )
+    }
 }

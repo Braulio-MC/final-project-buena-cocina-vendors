@@ -11,9 +11,11 @@ import com.auth0.android.provider.WebAuthProvider
 import com.bmc.buenacocinavendors.R
 import com.bmc.buenacocinavendors.core.NetworkStatus
 import com.bmc.buenacocinavendors.core.SHARING_COROUTINE_TIMEOUT_IN_SEC
+import com.bmc.buenacocinavendors.data.preferences.PreferencesService
 import com.bmc.buenacocinavendors.domain.repository.ConnectivityRepository
 import com.bmc.buenacocinavendors.domain.repository.UserRepository
 import com.bmc.buenacocinavendors.domain.Result
+import com.bmc.buenacocinavendors.domain.repository.ChatRepository
 import com.bmc.buenacocinavendors.ui.screen.profile.ProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +32,8 @@ class ProfileViewModel @Inject constructor(
     private val auth0Account: Auth0,
     private val auth0Manager: SecureCredentialsManager,
     private val userRepository: UserRepository,
+    private val preferencesService: PreferencesService,
+    private val chatRepository: ChatRepository,
     connectivityRepository: ConnectivityRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -76,8 +80,12 @@ class ProfileViewModel @Inject constructor(
                 }
 
                 override fun onSuccess(result: Void?) {
-                    auth0Manager.clearCredentials()
-                    onSuccess()
+                    viewModelScope.launch {
+                        auth0Manager.clearCredentials()
+                        chatRepository.disconnectUser()
+                        preferencesService.clearUserCredentials()
+                        onSuccess()
+                    }
                 }
             })
     }

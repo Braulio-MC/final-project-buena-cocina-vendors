@@ -6,7 +6,8 @@ import com.bmc.buenacocinavendors.domain.model.OrderDomain
 import com.bmc.buenacocinavendors.domain.model.OrderLineDomain
 
 data class DetailedOrderUiResultState(
-    val isWaitingForResult: Boolean = false,
+    val isWaitingForChannelResult: Boolean = false,
+    val isWaitingForStatusResult: Boolean = false,
     val status: OrderStatus = OrderStatus.UNASSIGNED,
     val statusError: UiText? = null
 )

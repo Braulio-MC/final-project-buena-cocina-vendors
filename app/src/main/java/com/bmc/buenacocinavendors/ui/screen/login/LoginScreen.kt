@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.auth0.android.result.UserProfile
 import com.bmc.buenacocinavendors.core.NetworkStatus
 import com.bmc.buenacocinavendors.ui.viewmodel.LoginViewModel
 
@@ -17,7 +18,7 @@ import com.bmc.buenacocinavendors.ui.viewmodel.LoginViewModel
 fun LoginScreen(
     windowSizeClass: WindowSizeClass,
     viewModel: LoginViewModel = hiltViewModel(),
-    onLoginButton: (Boolean) -> Unit
+    onLoginButton: (Boolean, UserProfile?) -> Unit
 ) {
     val netState = viewModel.netState.collectAsStateWithLifecycle()
 
@@ -41,10 +42,10 @@ fun LoginScreen(
 fun LoginScreenContent(
     windowSizeClass: WindowSizeClass,
     netState: NetworkStatus,
-    onLoginButton: (Boolean) -> Unit,
+    onLoginButton: (Boolean, UserProfile?) -> Unit,
     isLoginButtonEnabled: Boolean,
     updateEnableLoginButton: (Boolean) -> Unit,
-    onStartLogin: (Context, () -> Unit, () -> Unit) -> Unit
+    onStartLogin: (Context, () -> Unit, (UserProfile) -> Unit) -> Unit
 ) {
     if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
         LoginScreenExpanded(

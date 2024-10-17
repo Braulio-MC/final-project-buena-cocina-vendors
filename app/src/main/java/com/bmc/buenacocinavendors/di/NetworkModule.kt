@@ -1,13 +1,17 @@
 package com.bmc.buenacocinavendors.di
 
-import com.bmc.buenacocinavendors.core.API_SERVER_URL
+import android.content.Context
+import com.bmc.buenacocinavendors.R
 import com.bmc.buenacocinavendors.core.OK_HTTP_CLIENT_CONNECTION_TIMEOUT_IN_SEC
 import com.bmc.buenacocinavendors.core.OK_HTTP_CLIENT_READ_TIMEOUT_IN_SEC
 import com.bmc.buenacocinavendors.core.OK_HTTP_CLIENT_WRITE_TIMEOUT_IN_SEC
+import com.bmc.buenacocinavendors.data.network.service.GetStreamChannelService
+import com.bmc.buenacocinavendors.data.network.service.GetStreamTokenService
 import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -46,12 +50,28 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(@HeaderInterceptorOkHttpClient okHttpClient: OkHttpClient): Retrofit {
+    fun provideRetrofit(
+        @HeaderInterceptorOkHttpClient okHttpClient: OkHttpClient,
+        @ApplicationContext context: Context
+    ): Retrofit {
+        val baseUrl = context.getString(R.string.base_api_server_url)
         return Retrofit.Builder()
-            .baseUrl(API_SERVER_URL)
+            .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())  // Sandwich integration
             .client(okHttpClient)
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetStreamTokenService(retrofit: Retrofit): GetStreamTokenService {
+        return retrofit.create(GetStreamTokenService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetStreamChannelService(retrofit: Retrofit): GetStreamChannelService {
+        return retrofit.create(GetStreamChannelService::class.java)
     }
 }

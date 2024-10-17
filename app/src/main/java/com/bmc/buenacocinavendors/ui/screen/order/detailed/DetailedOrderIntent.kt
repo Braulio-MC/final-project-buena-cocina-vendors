@@ -4,5 +4,6 @@ import com.bmc.buenacocinavendors.core.OrderStatus
 
 sealed class DetailedOrderIntent {
     data class ChangeStatus(val status: OrderStatus) : DetailedOrderIntent()
+    data object CreateChannel : DetailedOrderIntent()
     data object Submit : DetailedOrderIntent()
 }

@@ -16,12 +16,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -55,6 +55,7 @@ import com.bmc.buenacocinavendors.core.DateUtils
 import com.bmc.buenacocinavendors.core.NetworkStatus
 import com.bmc.buenacocinavendors.core.OrderStatus
 import com.bmc.buenacocinavendors.core.getOrderStatusColor
+import com.bmc.buenacocinavendors.core.getOrderStatusLevel
 import com.bmc.buenacocinavendors.core.getOrderTotal
 import com.bmc.buenacocinavendors.ui.screen.common.NoInternetScreen
 import java.math.RoundingMode
@@ -93,6 +94,27 @@ fun DetailedOrderScreenCompactMedium(
                         )
                     }
                 },
+                actions = {
+                    IconButton(
+                        onClick = { onIntent(DetailedOrderIntent.CreateChannel) },
+                        enabled = uiState.order != null && !resultState.isWaitingForChannelResult
+                    ) {
+                        if (resultState.isWaitingForChannelResult) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                                    .size(20.dp)
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.Chat,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(30.dp)
+                            )
+                        }
+                    }
+                },
                 scrollBehavior = scrollBehavior
             )
         },
@@ -125,6 +147,7 @@ fun DetailedOrderScreenCompactMedium(
             } else {
                 "Se realizo la entrega"
             }
+            val orderStatusLevel = getOrderStatusLevel(uiState.order.status)
 
             Column(
                 modifier = Modifier
@@ -464,9 +487,10 @@ fun DetailedOrderScreenCompactMedium(
                             },
                             modifier = Modifier
                                 .size(185.dp, 45.dp),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(8.dp),
+                            enabled = resultState.status.level > orderStatusLevel
                         ) {
-                            if (resultState.isWaitingForResult) {
+                            if (resultState.isWaitingForStatusResult) {
                                 CircularProgressIndicator(
                                     modifier = Modifier
                                         .align(Alignment.CenterVertically)

@@ -315,6 +315,18 @@ fun CategoryTabItemDetailedContent(
                             }
                         }
                     }
+                    Text(
+                        text = "Productos relacionados a ${uiState.category.name}",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                            .fillMaxWidth()
+                    )
                     when (products.loadState.refresh) {
                         is LoadState.Error -> {
 
