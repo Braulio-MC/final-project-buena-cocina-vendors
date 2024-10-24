@@ -136,6 +136,7 @@ fun MainScreenContent(
             onProductBackButton = popBackStack,
             onOrderBackButton = popBackStack,
             onOrderDetailedBackButton = popBackStack,
+            onOrderDetailedOrderRatedBackButton = popBackStack,
             onChatBackButton = popBackStack,
             onDetailedChatBackButton = popBackStack,
             onLogoutButton = onLogoutButton

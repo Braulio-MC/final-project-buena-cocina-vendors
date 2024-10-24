@@ -27,6 +27,8 @@ output.json
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 /.idea/runConfigurations.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/inspectionProfiles/Project_Default.xml
 misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml

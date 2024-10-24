@@ -23,6 +23,7 @@ import com.bmc.buenacocinavendors.ui.screen.home.inner.store.update.StoreUpdateS
 import com.bmc.buenacocinavendors.ui.screen.home.inner.store.visualizer.StoreVisualizerScreen
 import com.bmc.buenacocinavendors.ui.screen.order.OrderScreen
 import com.bmc.buenacocinavendors.ui.screen.order.detailed.DetailedOrderScreen
+import com.bmc.buenacocinavendors.ui.screen.order.detailed.rating.DetailedOrderRatingScreen
 import com.bmc.buenacocinavendors.ui.screen.profile.ProfileScreen
 import io.getstream.chat.android.compose.viewmodel.channels.ChannelViewModelFactory
 import io.getstream.chat.android.models.Channel
@@ -64,9 +65,11 @@ fun NavGraphBuilder.mainGraph(
     onProductSuccessfulUpdate: () -> Unit,
     onProductSuccessfulDelete: () -> Unit,
     onOrderBackButton: () -> Unit,
-    onOrderItemClick: (String) -> Unit,
+    onOrderItemClick: (String, String, String) -> Unit,
     onOrderDetailedBackButton: () -> Unit,
     onOrderDetailedChannelCreatedSuccessful: (String) -> Unit,
+    onOrderDetailedOrderRatedButton: (String, String, String) -> Unit,
+    onOrderDetailedOrderRatedBackButton: () -> Unit,
     onChatBackButton: () -> Unit,
     onChatItemClick: (Channel) -> Unit,
     onDetailedChatBackButton: () -> Unit,
@@ -148,10 +151,15 @@ fun NavGraphBuilder.mainGraph(
             onBackButton = onOrderBackButton
         )
         orderDetailedScreen(
-            windowSizeClass,
+            windowSizeClass = windowSizeClass,
             onChannelCreatedSuccessful = onOrderDetailedChannelCreatedSuccessful,
+            onOrderRatedButton = onOrderDetailedOrderRatedButton,
             onBackButton = onOrderDetailedBackButton
 
+        )
+        orderRatingScreen(
+            windowSizeClass = windowSizeClass,
+            onBackButton = onOrderDetailedOrderRatedBackButton
         )
         chatScreen(
             viewModel = channelViewModelFactory,
@@ -375,7 +383,7 @@ fun NavGraphBuilder.productScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.orderScreen(
     windowSizeClass: WindowSizeClass,
-    onOrderItemClick: (String) -> Unit,
+    onOrderItemClick: (String, String, String) -> Unit,
     onBackButton: () -> Unit
 ) {
     composable(Screen.Main.Order.route) {
@@ -391,6 +399,7 @@ fun NavGraphBuilder.orderScreen(
 fun NavGraphBuilder.orderDetailedScreen(
     windowSizeClass: WindowSizeClass,
     onChannelCreatedSuccessful: (String) -> Unit,
+    onOrderRatedButton: (String, String, String) -> Unit,
     onBackButton: () -> Unit
 ) {
     composable<Screen.MainSerializable.OrderDetailed> {
@@ -398,7 +407,27 @@ fun NavGraphBuilder.orderDetailedScreen(
         DetailedOrderScreen(
             windowSizeClass = windowSizeClass,
             orderId = result.orderId,
+            userId = result.userId,
+            storeId = result.storeId,
             onChannelCreatedSuccessful = onChannelCreatedSuccessful,
+            onOrderRatedButton = onOrderRatedButton,
+            onBackButton = onBackButton
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+fun NavGraphBuilder.orderRatingScreen(
+    windowSizeClass: WindowSizeClass,
+    onBackButton: () -> Unit
+) {
+    composable<Screen.MainSerializable.OrderRated> {
+        val result = it.toRoute<Screen.MainSerializable.OrderRated>()
+        DetailedOrderRatingScreen(
+            windowSizeClass = windowSizeClass,
+            orderId = result.orderId,
+            userId = result.userId,
+            storeId = result.storeId,
             onBackButton = onBackButton
         )
     }

@@ -22,6 +22,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Chat
+import androidx.compose.material.icons.outlined.CheckCircleOutline
+import androidx.compose.material.icons.outlined.RateReview
+import androidx.compose.material.icons.outlined.Reviews
+import androidx.compose.material.icons.outlined.StarRate
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -72,6 +76,7 @@ fun DetailedOrderScreenCompactMedium(
     scrollBehavior: TopAppBarScrollBehavior,
     onIntent: (DetailedOrderIntent) -> Unit,
     onOrderStatusClick: () -> Unit,
+    onOrderRatedButton: () -> Unit,
     onBackButton: () -> Unit,
 ) {
     Scaffold(
@@ -113,6 +118,19 @@ fun DetailedOrderScreenCompactMedium(
                                     .size(30.dp)
                             )
                         }
+                    }
+                    IconButton(
+                        onClick = { onOrderRatedButton() },
+                        enabled = uiState.order != null &&
+                        uiState.order.status == OrderStatus.DELIVERED.status &&
+                        uiState.order.rated
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.StarRate,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(30.dp)
+                        )
                     }
                 },
                 scrollBehavior = scrollBehavior

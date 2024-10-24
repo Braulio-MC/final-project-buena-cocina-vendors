@@ -16,4 +16,10 @@
     <color name="order_status_arrived">#FF9800</color>
     <color name="order_status_error">#E91E1E</color>
     <color name="order_status_unassigned">#607D8B</color>
+
+    <!-- Rating star colors -->
+    <color name="rating_star_filled">#FFC107</color>
+
+    <!-- Discount color -->
+    <color name="store_visualizer_item_discount_color">#F49191</color>
 </resources>

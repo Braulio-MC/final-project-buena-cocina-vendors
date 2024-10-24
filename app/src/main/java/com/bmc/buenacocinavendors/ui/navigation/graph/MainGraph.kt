@@ -25,6 +25,7 @@ fun MainGraph(
     onProductBackButton: () -> Unit,
     onOrderBackButton: () -> Unit,
     onOrderDetailedBackButton: () -> Unit,
+    onOrderDetailedOrderRatedBackButton: () -> Unit,
     onChatBackButton: () -> Unit,
     onDetailedChatBackButton: () -> Unit,
     onLogoutButton: (Boolean) -> Unit
@@ -211,8 +212,8 @@ fun MainGraph(
                 }
             },
             onOrderBackButton = onOrderBackButton,
-            onOrderItemClick = { orderId ->
-                navController.navigate(Screen.MainSerializable.OrderDetailed(orderId)) {
+            onOrderItemClick = { orderId, userId, storeId ->
+                navController.navigate(Screen.MainSerializable.OrderDetailed(orderId, userId, storeId)) {
                     launchSingleTop = true
                 }
             },
@@ -225,6 +226,12 @@ fun MainGraph(
                     launchSingleTop = true
                 }
             },
+            onOrderDetailedOrderRatedButton = { orderId, userId, storeId ->
+                navController.navigate(Screen.MainSerializable.OrderRated(orderId, userId, storeId)) {
+                    launchSingleTop = true
+                }
+            },
+            onOrderDetailedOrderRatedBackButton = onOrderDetailedOrderRatedBackButton,
             onChatBackButton = onChatBackButton,
             onChatItemClick = { channel ->
                 navController.navigate(Screen.MainSerializable.ChatDetailed(channel.cid)) {

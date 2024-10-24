@@ -46,10 +46,10 @@ fun OrderScreen(
     viewModel: OrderViewModel = hiltViewModel(),
     topAppBarState: TopAppBarState = rememberTopAppBarState(),
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState),
-    onOrderItemClick: (String) -> Unit,
+    onOrderItemClick: (String, String, String) -> Unit,
     onBackButton: () -> Unit
 ) {
-    val orders = viewModel.orders().collectAsLazyPagingItems()
+    val orders = viewModel.orders.collectAsLazyPagingItems()
 
     OrderScreenContent(
         windowSizeClass = windowSizeClass,
@@ -68,7 +68,7 @@ fun OrderScreenContent(
     orders: LazyPagingItems<OrderDomain>,
     scrollState: ScrollState,
     scrollBehavior: TopAppBarScrollBehavior,
-    onOrderItemClick: (String) -> Unit,
+    onOrderItemClick: (String, String, String) -> Unit,
     onBackButton: () -> Unit
 ) {
     Scaffold(

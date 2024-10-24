@@ -33,6 +33,8 @@ import com.bmc.buenacocinavendors.ui.viewmodel.DetailedOrderViewModel
 fun DetailedOrderScreen(
     windowSizeClass: WindowSizeClass,
     orderId: String,
+    userId: String,
+    storeId: String,
     viewModel: DetailedOrderViewModel = hiltViewModel(
         creationCallback = { factory: DetailedOrderViewModel.DetailedOrderViewModelFactory ->
             factory.create(orderId = orderId)
@@ -43,6 +45,7 @@ fun DetailedOrderScreen(
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topAppBarState),
     orderStatusSheetState: SheetState = rememberModalBottomSheetState(),
     onChannelCreatedSuccessful: (String) -> Unit,
+    onOrderRatedButton: (String, String, String) -> Unit,
     onBackButton: () -> Unit
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -106,6 +109,7 @@ fun DetailedOrderScreen(
         scrollBehavior = scrollBehavior,
         onIntent = viewModel::onIntent,
         onOrderStatusClick = { showOrderStatusBottomSheet = true },
+        onOrderRatedButton = { onOrderRatedButton(orderId, userId, storeId) },
         onBackButton = onBackButton
     )
 }
@@ -122,6 +126,7 @@ fun DetailedOrderScreenContent(
     scrollBehavior: TopAppBarScrollBehavior,
     onIntent: (DetailedOrderIntent) -> Unit,
     onOrderStatusClick: () -> Unit,
+    onOrderRatedButton: () -> Unit,
     onBackButton: () -> Unit
 ) {
     if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
@@ -136,6 +141,7 @@ fun DetailedOrderScreenContent(
             scrollBehavior = scrollBehavior,
             onIntent = onIntent,
             onOrderStatusClick = onOrderStatusClick,
+            onOrderRatedButton = onOrderRatedButton,
             onBackButton = onBackButton
         )
     }

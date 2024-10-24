@@ -8,7 +8,7 @@ data class OrderNetwork(
     @DocumentId
     val documentId: String = "",
     val status: String = "",
-    val isRated: Boolean = false,
+    val rated: Boolean = false,
     val user: OrderUserNetwork = OrderUserNetwork(),
     val deliveryLocation: OrderDeliveryLocationNetwork = OrderDeliveryLocationNetwork(),
     val store: OrderStoreNetwork = OrderStoreNetwork(),

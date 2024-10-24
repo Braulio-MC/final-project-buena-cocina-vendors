@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.bmc.buenacocinavendors.core.SHARING_COROUTINE_TIMEOUT_IN_SEC
 import com.bmc.buenacocinavendors.domain.repository.OrderRepository
 import com.bmc.buenacocinavendors.domain.repository.StoreRepository
 import com.bmc.buenacocinavendors.domain.repository.UserRepository
@@ -15,10 +16,12 @@ import com.google.firebase.firestore.Query
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,7 +31,7 @@ class OrderViewModel @Inject constructor(
     private val storeRepository: StoreRepository
 ) : ViewModel() {
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun orders(): Flow<PagingData<OrderDomain>> = flow {
+    val orders: Flow<PagingData<OrderDomain>> = flow {
         emit(userRepository.getUserId())
     }.flatMapLatest { result ->
         when (result) {
@@ -49,6 +52,11 @@ class OrderViewModel @Inject constructor(
             }
         }
     }.cachedIn(viewModelScope)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(SHARING_COROUTINE_TIMEOUT_IN_SEC),
+            initialValue = PagingData.empty()
+        )
 
     private suspend fun getStore(userId: String): StoreDomain? {
         val qStore: (Query) -> Query = { query ->

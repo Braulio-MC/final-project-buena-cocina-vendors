@@ -46,6 +46,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -59,6 +60,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.bmc.buenacocinavendors.R
 import com.bmc.buenacocinavendors.core.NetworkStatus
 import com.bmc.buenacocinavendors.domain.model.ProductDomain
 import com.bmc.buenacocinavendors.ui.screen.common.NoInternetScreen
@@ -108,38 +110,40 @@ fun StoreVisualizerScreenContent(
     scrollBehavior: TopAppBarScrollBehavior,
     onBackButton: () -> Unit
 ) {
-    if (uiState.isLoading) {
-        StoreVisualizerShimmer()
-    } else {
-        if (uiState.store != null) {
-            Scaffold(
-                modifier = Modifier
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                text = uiState.store.name,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                textAlign = TextAlign.Center,
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = { onBackButton() }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        scrollBehavior = scrollBehavior
+    val storeName = if (uiState.store != null) uiState.store.name else ""
+
+    Scaffold(
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = storeName,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center,
                     )
-                }
-            ) {
+                },
+                navigationIcon = {
+                    IconButton(onClick = { onBackButton() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehavior
+            )
+        }
+    ) {
+        if (uiState.isLoading) {
+            StoreVisualizerShimmer()
+        } else {
+            if (uiState.store != null) {
                 Column(
                     modifier = Modifier
                         .padding(it)
@@ -207,7 +211,7 @@ fun StoreVisualizerScreenContent(
                                 Icon(
                                     imageVector = Icons.Filled.Star,
                                     contentDescription = "",
-                                    tint = Color.Yellow,
+                                    tint = colorResource(id = R.color.rating_star_filled),
                                     modifier = Modifier
                                         .size(35.dp)
                                         .weight(1f)
@@ -302,12 +306,12 @@ fun StoreVisualizerScreenContent(
                         }
                     }
                 }
-            }
-        } else {
-            if (netState == NetworkStatus.Unavailable || netState == NetworkStatus.Lost) {
-                NoInternetScreen(
-                    paddingValues = PaddingValues()
-                )
+            } else {
+//                if (netState == NetworkStatus.Unavailable || netState == NetworkStatus.Lost) {
+//                    NoInternetScreen(
+//                        paddingValues = PaddingValues()
+//                    )
+//                }
             }
         }
     }

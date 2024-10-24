@@ -45,8 +45,16 @@ import java.time.LocalDateTime
 @Composable
 fun OrderItem(
     order: OrderDomain,
-    onClick: (String) -> Unit,
+    onClick: (String, String, String) -> Unit,
 ) {
+    var orderTitle = "Informacion: "
+    orderTitle += if (order.status == OrderStatus.DELIVERED.status && !order.rated) {
+        "espera calificacion"
+    } else if (order.status == OrderStatus.DELIVERED.status && order.rated) {
+        "se califico"
+    } else {
+        "pendiente"
+    }
     val createdAt = order.createdAt?.let {
         DateUtils.localDateTimeToString(it)
     } ?: "No se pudo obtener la fecha"
@@ -90,7 +98,7 @@ fun OrderItem(
                     .weight(2f)
             ) {
                 Text(
-                    text = "Informacion",
+                    text = orderTitle,
                     textAlign = TextAlign.Start,
                     color = Color.Black,
                     fontSize = 15.sp,
@@ -228,7 +236,7 @@ fun OrderItem(
                         }
                     }
                     Button(
-                        onClick = { onClick(order.id) },
+                        onClick = { onClick(order.id, order.user.id, order.store.id) },
                         modifier = Modifier
                             .minimumInteractiveComponentSize(),
                         shape = RoundedCornerShape(6.dp),
@@ -256,7 +264,7 @@ fun OrderItemPreview() {
             order = OrderDomain(
                 id = "oWqou7mmtNdLY0aT3Z7B",
                 status = OrderStatus.CREATED.status,
-                isRated = false,
+                rated = false,
                 user = OrderDomain.OrderUserDomain("1", "Braulio"),
                 deliveryLocation = OrderDomain.OrderDeliveryLocationDomain(
                     "1",
@@ -334,7 +342,7 @@ fun OrderItemPreview() {
                 createdAt = LocalDateTime.now(),
                 updatedAt = LocalDateTime.now()
             ),
-            onClick = {}
+            onClick = { _, _, _ -> }
         )
     }
 }

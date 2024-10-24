@@ -9,7 +9,7 @@ object OrderMapper {
         return OrderDomain(
             id = network.documentId,
             status = network.status,
-            isRated = network.isRated,
+            rated = network.rated,
             user = OrderDomain.OrderUserDomain(
                 id = network.user.id,
                 name = network.user.name
