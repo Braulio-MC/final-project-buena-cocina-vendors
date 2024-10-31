@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bmc.buenacocinavendors.core.NetworkStatus
-import com.bmc.buenacocinavendors.domain.model.OrderDomain
 import com.bmc.buenacocinavendors.ui.viewmodel.DetailedOrderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +48,6 @@ fun DetailedOrderScreen(
     onBackButton: () -> Unit
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    val resultState = viewModel.resultState.collectAsStateWithLifecycle()
     val netState = viewModel.netState.collectAsStateWithLifecycle()
     val currentContext = LocalContext.current
     val snackbarHostState = remember {
@@ -102,7 +100,6 @@ fun DetailedOrderScreen(
     DetailedOrderScreenContent(
         windowSizeClass = windowSizeClass,
         uiState = uiState.value,
-        resultState = resultState.value,
         netState = netState.value,
         snackbarHostState = snackbarHostState,
         scrollState = scrollState,
@@ -119,7 +116,6 @@ fun DetailedOrderScreen(
 fun DetailedOrderScreenContent(
     windowSizeClass: WindowSizeClass,
     uiState: DetailedOrderUiState,
-    resultState: DetailedOrderUiResultState,
     netState: NetworkStatus,
     snackbarHostState: SnackbarHostState,
     scrollState: ScrollState,
@@ -134,7 +130,6 @@ fun DetailedOrderScreenContent(
     } else {
         DetailedOrderScreenCompactMedium(
             uiState = uiState,
-            resultState = resultState,
             snackbarHostState = snackbarHostState,
             netState = netState,
             scrollState = scrollState,

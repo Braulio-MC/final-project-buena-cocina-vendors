@@ -30,10 +30,8 @@ import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntSize
 import com.bmc.buenacocinavendors.R
-import com.bmc.buenacocinavendors.domain.model.OrderLineDomain
 import com.google.firebase.Timestamp
 import java.io.ByteArrayOutputStream
-import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -43,9 +41,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Base64
-import java.util.Date
 import java.util.Locale
-
 
 fun getOrderStatusColor(status: String): Int {
     return when (status) {
@@ -69,14 +65,6 @@ fun getOrderStatusLevel(status: String): Int {
         OrderStatus.ERROR.status -> ORDER_STATUS_ERROR_LEVEL
         else -> ORDER_STATUS_UNASSIGNED_LEVEL
     }
-}
-
-fun getOrderTotal(lines: List<OrderLineDomain>): BigDecimal {
-    var total = BigDecimal.ZERO
-    lines.forEach { line ->
-        total += line.product.price * line.quantity.toBigDecimal()
-    }
-    return total
 }
 
 // TODO: create color values in res/value/colors

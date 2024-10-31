@@ -2,7 +2,7 @@ package com.bmc.buenacocinavendors.ui.screen.home.inner.store.visualizer
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,22 +17,23 @@ import com.bmc.buenacocinavendors.core.shimmerEffect
 
 @Composable
 @Preview(showBackground = true)
-fun StoreVisualizerShimmer() {
+fun StoreVisualizerShimmer(
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .padding(bottom = 20.dp)
                 .fillMaxWidth()
                 .height(250.dp)
                 .shimmerEffect()
         )
+        Spacer(modifier = Modifier.height(20.dp))
         Box(
             modifier = Modifier
-                .size(250.dp, 45.dp)
+                .size(250.dp, 30.dp)
                 .shimmerEffect()
         )
         Box(
@@ -44,7 +45,7 @@ fun StoreVisualizerShimmer() {
         Box(
             modifier = Modifier
                 .padding(start = 10.dp)
-                .size(300.dp, 45.dp)
+                .size(300.dp, 30.dp)
                 .align(Alignment.Start)
                 .shimmerEffect()
         )

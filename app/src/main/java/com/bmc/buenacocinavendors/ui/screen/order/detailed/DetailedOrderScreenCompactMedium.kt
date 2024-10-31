@@ -22,9 +22,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Chat
-import androidx.compose.material.icons.outlined.CheckCircleOutline
-import androidx.compose.material.icons.outlined.RateReview
-import androidx.compose.material.icons.outlined.Reviews
 import androidx.compose.material.icons.outlined.StarRate
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -60,16 +57,13 @@ import com.bmc.buenacocinavendors.core.NetworkStatus
 import com.bmc.buenacocinavendors.core.OrderStatus
 import com.bmc.buenacocinavendors.core.getOrderStatusColor
 import com.bmc.buenacocinavendors.core.getOrderStatusLevel
-import com.bmc.buenacocinavendors.core.getOrderTotal
 import com.bmc.buenacocinavendors.ui.screen.common.NoInternetScreen
-import java.math.RoundingMode
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailedOrderScreenCompactMedium(
     uiState: DetailedOrderUiState,
-    resultState: DetailedOrderUiResultState,
     snackbarHostState: SnackbarHostState,
     netState: NetworkStatus,
     scrollState: ScrollState,
@@ -102,9 +96,9 @@ fun DetailedOrderScreenCompactMedium(
                 actions = {
                     IconButton(
                         onClick = { onIntent(DetailedOrderIntent.CreateChannel) },
-                        enabled = uiState.order != null && !resultState.isWaitingForChannelResult
+                        enabled = uiState.order != null && !uiState.isWaitingForChannelResult
                     ) {
-                        if (resultState.isWaitingForChannelResult) {
+                        if (uiState.isWaitingForChannelResult) {
                             CircularProgressIndicator(
                                 modifier = Modifier
                                     .align(Alignment.CenterVertically)
@@ -151,7 +145,6 @@ fun DetailedOrderScreenCompactMedium(
             val updatedAt = uiState.order.updatedAt?.let {
                 DateUtils.localDateTimeToString(it)
             } ?: "No se pudo obtener la fecha"
-            val orderTotal = getOrderTotal(uiState.lines).setScale(2, RoundingMode.HALF_DOWN)
             val orderLocation = uiState.order.deliveryLocation.name
             val orderPaymentMethod = uiState.order.paymentMethod.name
             val elapsedTimeStatus = if (uiState.order.status != OrderStatus.DELIVERED.status) {
@@ -301,7 +294,7 @@ fun DetailedOrderScreenCompactMedium(
                                         .weight(1f)
                                 )
                                 Text(
-                                    text = "$$orderTotal",
+                                    text = "$${uiState.orderTotal}",
                                     textAlign = TextAlign.End,
                                     color = Color.DarkGray,
                                     fontSize = 17.sp,
@@ -476,7 +469,7 @@ fun DetailedOrderScreenCompactMedium(
                         ),
                             shape = RoundedCornerShape(4.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = colorResource(id = getOrderStatusColor(resultState.status.status))
+                                containerColor = colorResource(id = getOrderStatusColor(uiState.status.status))
                             ),
                             modifier = Modifier
                                 .size(150.dp, 40.dp)
@@ -489,7 +482,7 @@ fun DetailedOrderScreenCompactMedium(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = resultState.status.status,
+                                    text = uiState.status.status,
                                     textAlign = TextAlign.Center,
                                     color = Color.Black,
                                     fontSize = 18.sp,
@@ -506,9 +499,9 @@ fun DetailedOrderScreenCompactMedium(
                             modifier = Modifier
                                 .size(185.dp, 45.dp),
                             shape = RoundedCornerShape(8.dp),
-                            enabled = resultState.status.level > orderStatusLevel
+                            enabled = uiState.status.level > orderStatusLevel
                         ) {
-                            if (resultState.isWaitingForStatusResult) {
+                            if (uiState.isWaitingForStatusResult) {
                                 CircularProgressIndicator(
                                     modifier = Modifier
                                         .align(Alignment.CenterVertically)

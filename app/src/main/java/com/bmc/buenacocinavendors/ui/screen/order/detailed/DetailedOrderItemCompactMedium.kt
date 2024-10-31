@@ -21,25 +21,31 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.bmc.buenacocinavendors.domain.model.OrderLineDomain
-import com.bmc.buenacocinavendors.ui.theme.BuenaCocinaVendorsTheme
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.math.RoundingMode
-import java.time.LocalDateTime
 
 @Composable
 fun DetailedOrderItemCompactMedium(
     line: OrderLineDomain
 ) {
-    val total =
-        (line.quantity.toBigDecimal() * line.product.price).setScale(2, RoundingMode.HALF_DOWN)
-
+    val pPriceUnit = line.product.price.setScale(2, RoundingMode.HALF_DOWN)
+    val pQuantity = line.quantity.toBigDecimal()
+    val pDiscount = line.product.discount.percentage.setScale(2, RoundingMode.HALF_DOWN)
+    val discount = (pPriceUnit * (pDiscount / BigDecimal.valueOf(100)) * pQuantity).setScale(
+        2,
+        RoundingMode.HALF_DOWN
+    )
+    val total = (pPriceUnit * pQuantity - discount).setScale(2, RoundingMode.HALF_DOWN)
+    val discountStr = if (pDiscount > BigDecimal.ZERO) {
+        "$$discount ($pDiscount%)"
+    } else {
+        "No aplica"
+    }
     Row(
         modifier = Modifier
             .padding(5.dp)
@@ -92,7 +98,37 @@ fun DetailedOrderItemCompactMedium(
                         .weight(1f)
                 )
                 Text(
-                    text = "$${line.product.price.toPlainString()}",
+                    text = "$$pPriceUnit",
+                    textAlign = TextAlign.End,
+                    fontSize = 15.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.W400,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .weight(2f)
+                        .padding(end = 5.dp)
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Descuento",
+                    textAlign = TextAlign.End,
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Light,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+                Text(
+                    text = discountStr,
                     textAlign = TextAlign.End,
                     fontSize = 15.sp,
                     color = Color.Black,
@@ -172,33 +208,5 @@ fun DetailedOrderItemCompactMedium(
                 )
             }
         }
-    }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun DetailedOrderItemCompactMediumPreview() {
-    BuenaCocinaVendorsTheme {
-        DetailedOrderItemCompactMedium(
-            line = OrderLineDomain(
-                id = "1",
-                quantity = BigInteger("4"),
-                product = OrderLineDomain.OrderLineProductDomain(
-                    id = "1",
-                    name = "Hamburguesa de res con papas",
-                    description = "Hamburguesa de res con papas fritas",
-                    image = "",
-                    price = BigDecimal(150.50).setScale(2),
-                    discount = OrderLineDomain.OrderLineProductDomain.OrderLineProductDiscountDomain(
-                        id = "1",
-                        percentage = BigDecimal(10),
-                        startDate = LocalDateTime.now(),
-                        endDate = LocalDateTime.now()
-                    )
-                ),
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now()
-            )
-        )
     }
 }

@@ -139,14 +139,18 @@ fun StoreVisualizerScreenContent(
                 scrollBehavior = scrollBehavior
             )
         }
-    ) {
+    ) { paddingValues ->
         if (uiState.isLoading) {
-            StoreVisualizerShimmer()
+            StoreVisualizerShimmer(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+            )
         } else {
             if (uiState.store != null) {
                 Column(
                     modifier = Modifier
-                        .padding(it)
+                        .padding(paddingValues)
                         .fillMaxSize()
                         .verticalScroll(scrollState),
                     horizontalAlignment = Alignment.CenterHorizontally

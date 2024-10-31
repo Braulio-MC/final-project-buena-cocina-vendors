@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bmc.buenacocinavendors.R
@@ -39,8 +38,6 @@ import com.bmc.buenacocinavendors.core.DateUtils
 import com.bmc.buenacocinavendors.core.OrderStatus
 import com.bmc.buenacocinavendors.core.getOrderStatusColor
 import com.bmc.buenacocinavendors.domain.model.OrderDomain
-import com.bmc.buenacocinavendors.ui.theme.BuenaCocinaVendorsTheme
-import java.time.LocalDateTime
 
 @Composable
 fun OrderItem(
@@ -255,96 +252,3 @@ fun OrderItem(
         }
     }
 }
-
-@Composable
-@Preview(showBackground = true)
-fun OrderItemPreview() {
-    BuenaCocinaVendorsTheme {
-        OrderItem(
-            order = OrderDomain(
-                id = "oWqou7mmtNdLY0aT3Z7B",
-                status = OrderStatus.CREATED.status,
-                rated = false,
-                user = OrderDomain.OrderUserDomain("1", "Braulio"),
-                deliveryLocation = OrderDomain.OrderDeliveryLocationDomain(
-                    "1",
-                    "Enfrente del Chedraui"
-                ),
-                store = OrderDomain.OrderStoreDomain("1", ownerId = "1", "La Cuchara Verde"),
-                paymentMethod = OrderDomain.OrderPaymentMethodDomain("1", "Tarjeta de credito"),
-//                orderLines = listOf(
-//                    OrderLineDomain(
-//                        id = "1",
-//                        total = BigDecimal(430.55).setScale(2, RoundingMode.HALF_UP),
-//                        quantity = BigInteger("4"),
-//                        product = OrderLineDomain.OrderLineProductDomain(
-//                            id = "1",
-//                            name = "Hamburguesa de res con papas",
-//                            image = "https://firebasestorage.googleapis.com/v0/b/buena-cocina-fp.appspot.com/o/images%2FLa%20cuchara%20verde%2FHamburguesa%20de%20res%20con%20papas.jpg?alt=media&token=9b1aaf42-466e-407d-a531-0f4b007b1b3e",
-//                            price = BigDecimal(430.55).setScale(2, RoundingMode.HALF_UP),
-//                        ),
-//                        createdAt = LocalDateTime.now(),
-//                        updatedAt = LocalDateTime.now(),
-//                    ),
-//                    OrderLineDomain(
-//                        id = "1",
-//                        total = BigDecimal(430.55).setScale(2, RoundingMode.HALF_UP),
-//                        quantity = BigInteger("4"),
-//                        product = OrderLineDomain.OrderLineProductDomain(
-//                            id = "1",
-//                            name = "Ensalada griega",
-//                            image = "https://firebasestorage.googleapis.com/v0/b/buena-cocina-fp.appspot.com/o/images%2FVegan%2FEnsalada%20griega.jpeg?alt=media&token=218d3c1d-ea30-4c08-9bc8-03250450d811",
-//                            price = BigDecimal(430.55).setScale(2, RoundingMode.HALF_UP),
-//                        ),
-//                        createdAt = LocalDateTime.now(),
-//                        updatedAt = LocalDateTime.now(),
-//                    ),
-//                    OrderLineDomain(
-//                        id = "1",
-//                        total = BigDecimal(430.55).setScale(2, RoundingMode.HALF_UP),
-//                        quantity = BigInteger("4"),
-//                        product = OrderLineDomain.OrderLineProductDomain(
-//                            id = "1",
-//                            name = "Hot dog",
-//                            image = "https://firebasestorage.googleapis.com/v0/b/buena-cocina-fp.appspot.com/o/images%2FLa%20cuchara%20verde%2FHot%20dog.jpg?alt=media&token=04c57da9-20d5-4bb1-a499-677be3cc4401",
-//                            price = BigDecimal(430.55).setScale(2, RoundingMode.HALF_UP),
-//                        ),
-//                        createdAt = LocalDateTime.now(),
-//                        updatedAt = LocalDateTime.now(),
-//                    ),
-//                    OrderLineDomain(
-//                        id = "1",
-//                        total = BigDecimal(430.55).setScale(2, RoundingMode.HALF_UP),
-//                        quantity = BigInteger("4"),
-//                        product = OrderLineDomain.OrderLineProductDomain(
-//                            id = "1",
-//                            name = "Ensalada griega",
-//                            image = "https://firebasestorage.googleapis.com/v0/b/buena-cocina-fp.appspot.com/o/images%2FVegan%2FEnsalada%20griega.jpeg?alt=media&token=218d3c1d-ea30-4c08-9bc8-03250450d811",
-//                            price = BigDecimal(430.55).setScale(2, RoundingMode.HALF_UP),
-//                        ),
-//                        createdAt = LocalDateTime.now(),
-//                        updatedAt = LocalDateTime.now(),
-//                    ),
-//                    OrderLineDomain(
-//                        id = "1",
-//                        total = BigDecimal(430.55).setScale(2, RoundingMode.HALF_UP),
-//                        quantity = BigInteger("4"),
-//                        product = OrderLineDomain.OrderLineProductDomain(
-//                            id = "1",
-//                            name = "Hot dog",
-//                            image = "https://firebasestorage.googleapis.com/v0/b/buena-cocina-fp.appspot.com/o/images%2FLa%20cuchara%20verde%2FHot%20dog.jpg?alt=media&token=04c57da9-20d5-4bb1-a499-677be3cc4401",
-//                            price = BigDecimal(430.55).setScale(2, RoundingMode.HALF_UP),
-//                        ),
-//                        createdAt = LocalDateTime.now(),
-//                        updatedAt = LocalDateTime.now(),
-//                    ),
-//                ),
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now()
-            ),
-            onClick = { _, _, _ -> }
-        )
-    }
-}
-
-
