@@ -52,8 +52,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
-import com.bmc.buenacocinavendors.R
-import com.bmc.buenacocinavendors.core.API_SERVER_CACHE_TIME_IN_MIN
 import com.bmc.buenacocinavendors.core.CATEGORY_TAB_UPDATE_SHIMMER_ITEM_COUNT
 import com.bmc.buenacocinavendors.core.makeBulletedList
 import com.bmc.buenacocinavendors.domain.model.CategoryDomain

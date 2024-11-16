@@ -42,7 +42,7 @@ class TokenRepository @Inject constructor(
                             .getHttpsCallable("pushNotification-create")
                             .call(fParams)
                             .addOnSuccessListener { response ->
-                                onSuccess(response.data)
+                                onSuccess(response.getData())
                             }
                             .addOnFailureListener { e ->
                                 onFailure(e)
@@ -59,7 +59,7 @@ class TokenRepository @Inject constructor(
                 .getHttpsCallable("pushNotification-create")
                 .call(fParams)
                 .addOnSuccessListener { response ->
-                    onSuccess(response.data)
+                    onSuccess(response.getData())
                 }
                 .addOnFailureListener { e ->
                     onFailure(e)

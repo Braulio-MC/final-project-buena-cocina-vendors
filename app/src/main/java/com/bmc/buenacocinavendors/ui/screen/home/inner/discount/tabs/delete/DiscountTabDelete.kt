@@ -27,7 +27,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,8 +37,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
-import com.bmc.buenacocinavendors.R
-import com.bmc.buenacocinavendors.core.API_SERVER_CACHE_TIME_IN_MIN
 import com.bmc.buenacocinavendors.core.DISCOUNT_TAB_DELETE_SHIMMER_ITEM_COUNT
 import com.bmc.buenacocinavendors.core.makeBulletedList
 import com.bmc.buenacocinavendors.domain.model.DiscountDomain

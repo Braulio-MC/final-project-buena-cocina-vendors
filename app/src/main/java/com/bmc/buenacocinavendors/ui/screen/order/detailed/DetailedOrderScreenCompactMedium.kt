@@ -71,6 +71,7 @@ fun DetailedOrderScreenCompactMedium(
     onIntent: (DetailedOrderIntent) -> Unit,
     onOrderStatusClick: () -> Unit,
     onOrderRatedButton: () -> Unit,
+    onShowLocationOnMapButton: () -> Unit,
     onBackButton: () -> Unit,
 ) {
     Scaffold(
@@ -145,7 +146,6 @@ fun DetailedOrderScreenCompactMedium(
             val updatedAt = uiState.order.updatedAt?.let {
                 DateUtils.localDateTimeToString(it)
             } ?: "No se pudo obtener la fecha"
-            val orderLocation = uiState.order.deliveryLocation.name
             val orderPaymentMethod = uiState.order.paymentMethod.name
             val elapsedTimeStatus = if (uiState.order.status != OrderStatus.DELIVERED.status) {
                 if (uiState.order.createdAt != null) {
@@ -293,18 +293,33 @@ fun DetailedOrderScreenCompactMedium(
                                     modifier = Modifier
                                         .weight(1f)
                                 )
-                                Text(
-                                    text = "$${uiState.orderTotal}",
-                                    textAlign = TextAlign.End,
-                                    color = Color.DarkGray,
-                                    fontSize = 17.sp,
-                                    fontWeight = FontWeight.W500,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier
-                                        .weight(2f)
-                                        .padding(end = 5.dp)
-                                )
+                                if (uiState.isCalculatingOrderTotal) {
+                                    Text(
+                                        text = "Cargando...",
+                                        textAlign = TextAlign.End,
+                                        color = Color.DarkGray,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Light,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier
+                                            .weight(2f)
+                                            .padding(end = 5.dp)
+                                    )
+                                } else {
+                                    Text(
+                                        text = "$${uiState.orderTotal}",
+                                        textAlign = TextAlign.End,
+                                        color = Color.DarkGray,
+                                        fontSize = 17.sp,
+                                        fontWeight = FontWeight.W500,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier
+                                            .weight(2f)
+                                            .padding(end = 5.dp)
+                                    )
+                                }
                             }
                             HorizontalDivider(
                                 thickness = 1.dp,
@@ -329,7 +344,7 @@ fun DetailedOrderScreenCompactMedium(
                                         .weight(1f)
                                 )
                                 Text(
-                                    text = orderLocation,
+                                    text = "Ver en el mapa",
                                     textAlign = TextAlign.End,
                                     color = Color.DarkGray,
                                     fontSize = 17.sp,
@@ -339,6 +354,7 @@ fun DetailedOrderScreenCompactMedium(
                                     modifier = Modifier
                                         .weight(2f)
                                         .padding(end = 5.dp)
+                                        .clickable { onShowLocationOnMapButton() }
                                 )
                             }
                             HorizontalDivider(

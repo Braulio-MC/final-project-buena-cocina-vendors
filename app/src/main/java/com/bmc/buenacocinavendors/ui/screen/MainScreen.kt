@@ -2,8 +2,6 @@ package com.bmc.buenacocinavendors.ui.screen
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
@@ -130,7 +128,6 @@ fun MainScreenContent(
             onCategoryBackButton = popBackStack,
             onCategoryVisualizerItemDetailedBackButton = popBackStack,
             onCategoryGeneralItemDetailedBackButton = popBackStack,
-            onLocationBackButton = popBackStack,
             onDiscountBackButton = popBackStack,
             onDiscountVisualizerItemDetailedBackButton = popBackStack,
             onProductBackButton = popBackStack,

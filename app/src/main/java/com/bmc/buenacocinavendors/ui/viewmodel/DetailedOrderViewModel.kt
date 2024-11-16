@@ -1,17 +1,23 @@
 package com.bmc.buenacocinavendors.ui.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bmc.buenacocinavendors.core.LOCATION_RETRIEVE_INTERVAL_IN_MILLIS
 import com.bmc.buenacocinavendors.core.NetworkStatus
 import com.bmc.buenacocinavendors.core.OrderStatus
 import com.bmc.buenacocinavendors.core.SHARING_COROUTINE_TIMEOUT_IN_SEC
+import com.bmc.buenacocinavendors.data.network.service.LocationService
 import com.bmc.buenacocinavendors.domain.repository.ConnectivityRepository
 import com.bmc.buenacocinavendors.domain.repository.OrderRepository
 import com.bmc.buenacocinavendors.domain.Result
 import com.bmc.buenacocinavendors.domain.error.DataError
+import com.bmc.buenacocinavendors.domain.isGpsOrNetworkEnabledFlow
 import com.bmc.buenacocinavendors.domain.mapper.asFormErrorUiText
+import com.bmc.buenacocinavendors.domain.mapper.asLatLng
 import com.bmc.buenacocinavendors.domain.model.OrderLineDomain
 import com.bmc.buenacocinavendors.domain.repository.OrderLineRepository
+import com.bmc.buenacocinavendors.domain.repository.RemoteConfigRepository
 import com.bmc.buenacocinavendors.domain.usecase.CreateGetStreamChannel
 import com.bmc.buenacocinavendors.domain.usecase.SendOrderStatusNotificationToSpecificUserDevices
 import com.bmc.buenacocinavendors.domain.usecase.UpdateOrderStatus
@@ -22,11 +28,18 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -38,15 +51,21 @@ import java.math.RoundingMode
 
 @HiltViewModel(assistedFactory = DetailedOrderViewModel.DetailedOrderViewModelFactory::class)
 class DetailedOrderViewModel @AssistedInject constructor(
+    @ApplicationContext private val context: Context,
     private val validateStatus: ValidateOrderStatus,
     private val sendOrderStatusNotificationToSpecificUserDevices: SendOrderStatusNotificationToSpecificUserDevices,
     private val updateOrderStatus: UpdateOrderStatus,
     private val createGetStreamChannel: CreateGetStreamChannel,
-    orderRepository: OrderRepository,
-    orderLineRepository: OrderLineRepository,
+    private val remoteConfigRepository: RemoteConfigRepository,
+    private val orderRepository: OrderRepository,
+    private val orderLineRepository: OrderLineRepository,
+    private val locationService: LocationService,
     connectivityRepository: ConnectivityRepository,
     @Assisted private val orderId: String
 ) : ViewModel() {
+    private var _locationJob: Job? = null
+    private val _visiblePermissionDialogQueue = MutableStateFlow<List<String>>(emptyList())
+    val visiblePermissionDialogQueue: StateFlow<List<String>> = _visiblePermissionDialogQueue
     private val _uiState = MutableStateFlow(DetailedOrderUiState())
     val uiState: StateFlow<DetailedOrderUiState> = _uiState
         .onStart {
@@ -77,6 +96,20 @@ class DetailedOrderViewModel @AssistedInject constructor(
                         currentState.copy(isLoadingOrderLines = false, lines = lines)
                     }
                     calculate(lines)
+                }
+                .launchIn(viewModelScope)
+            remoteConfigRepository.cuceiCenterOnMap
+                .onEach { pair ->
+                    _uiState.update { currentState ->
+                        currentState.copy(cuceiCenterOnMap = pair)
+                    }
+                }
+                .launchIn(viewModelScope)
+            remoteConfigRepository.cuceiAreaBoundsOnMap
+                .onEach { pairList ->
+                    _uiState.update { currentState ->
+                        currentState.copy(cuceiAreaBoundsOnMap = pairList)
+                    }
                 }
                 .launchIn(viewModelScope)
         }
@@ -113,6 +146,9 @@ class DetailedOrderViewModel @AssistedInject constructor(
     }
 
     private fun calculate(items: List<OrderLineDomain>) {
+        _uiState.update { currentState ->
+            currentState.copy(isCalculatingOrderTotal = true)
+        }
         if (items.isNotEmpty()) {
             val total =
                 items.sumOf { item ->
@@ -123,11 +159,17 @@ class DetailedOrderViewModel @AssistedInject constructor(
                     item.product.price.times(item.quantity.toBigDecimal()).minus(discount)
                 }.setScale(2, RoundingMode.HALF_DOWN)
             _uiState.update { currentState ->
-                currentState.copy(orderTotal = total)
+                currentState.copy(
+                    isCalculatingOrderTotal = false,
+                    orderTotal = total
+                )
             }
         } else {
             _uiState.update { currentState ->
-                currentState.copy(orderTotal = BigDecimal.ZERO)
+                currentState.copy(
+                    isCalculatingOrderTotal = false,
+                    orderTotal = BigDecimal.ZERO
+                )
             }
         }
     }
@@ -233,6 +275,56 @@ class DetailedOrderViewModel @AssistedInject constructor(
                 currentState.copy(isWaitingForStatusResult = false)
             }
             _validationEvent.send(ValidateEvent.UpdateStatusFailure(e))
+        }
+    }
+
+    fun dismissPermissionDialog() {
+        if (_visiblePermissionDialogQueue.value.isNotEmpty()) {
+            _visiblePermissionDialogQueue.update { currentState ->
+                currentState.drop(1)
+            }
+        }
+    }
+
+    fun onPermissionResult(permission: String, isGranted: Boolean) {
+        if (!isGranted && !_visiblePermissionDialogQueue.value.contains(permission)) {
+            _visiblePermissionDialogQueue.update { currentState ->
+                currentState + permission
+            }
+        }
+    }
+
+    fun startLocationUpdates() {
+        if (_locationJob == null || _locationJob?.isActive == false) {
+            _locationJob = viewModelScope.launch {
+                combine(
+                    locationService.getLocationUpdates(LOCATION_RETRIEVE_INTERVAL_IN_MILLIS)
+                        .distinctUntilChanged()
+                        .filterNotNull()
+                        .map { location -> location.asLatLng() }
+                        .catch { e -> e.printStackTrace() },
+                    context.isGpsOrNetworkEnabledFlow()
+                        .distinctUntilChanged()
+                ) { location, isLocationEnabled ->
+                    if (isLocationEnabled) location else null
+                }.onStart {
+                    _uiState.update { currentState ->
+                        currentState.copy(isLoadingUserLocation = true)
+                    }
+                }.onEach { location ->
+                    _uiState.update { currentState ->
+                        currentState.copy(isLoadingUserLocation = false, userLocation = location)
+                    }
+                }.launchIn(viewModelScope)
+            }
+        }
+    }
+
+    fun stopLocationUpdates() {
+        _locationJob?.cancel()
+        _locationJob = null
+        _uiState.update { currentState ->
+            currentState.copy(userLocation = null)
         }
     }
 

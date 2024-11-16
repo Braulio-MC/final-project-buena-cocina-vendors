@@ -61,8 +61,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
-import com.bmc.buenacocinavendors.R
-import com.bmc.buenacocinavendors.core.API_SERVER_CACHE_TIME_IN_MIN
 import com.bmc.buenacocinavendors.core.DISCOUNT_TAB_UPDATE_SHIMMER_ITEM_COUNT
 import com.bmc.buenacocinavendors.core.DateUtils
 import com.bmc.buenacocinavendors.core.TimeUtils
@@ -71,7 +69,6 @@ import com.bmc.buenacocinavendors.domain.model.DiscountDomain
 import com.bmc.buenacocinavendors.ui.screen.common.TimePickerDialog
 import com.bmc.buenacocinavendors.ui.screen.home.inner.discount.tabs.DiscountEmpty
 import com.bmc.buenacocinavendors.ui.screen.home.inner.discount.tabs.DiscountItemShimmer
-import com.bmc.buenacocinavendors.ui.screen.home.inner.discount.tabs.add.DiscountTabAddIntent
 import com.bmc.buenacocinavendors.ui.viewmodel.DiscountTabUpdateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

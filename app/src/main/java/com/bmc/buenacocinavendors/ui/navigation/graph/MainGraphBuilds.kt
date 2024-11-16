@@ -16,7 +16,6 @@ import com.bmc.buenacocinavendors.ui.screen.home.inner.category.tabs.general.det
 import com.bmc.buenacocinavendors.ui.screen.home.inner.category.tabs.visualizer.detailed.CategoryTabVisualizerItemDetailed
 import com.bmc.buenacocinavendors.ui.screen.home.inner.discount.DiscountScreen
 import com.bmc.buenacocinavendors.ui.screen.home.inner.discount.tabs.visualizer.detailed.DiscountTabVisualizerItemDetailed
-import com.bmc.buenacocinavendors.ui.screen.home.inner.location.LocationScreen
 import com.bmc.buenacocinavendors.ui.screen.home.inner.product.ProductScreen
 import com.bmc.buenacocinavendors.ui.screen.home.inner.store.update.StoreUpdateInformationScreen
 import com.bmc.buenacocinavendors.ui.screen.home.inner.store.update.StoreUpdateScreen
@@ -47,11 +46,6 @@ fun NavGraphBuilder.mainGraph(
     onCategorySuccessfulCreation: () -> Unit,
     onCategorySuccessfulUpdate: () -> Unit,
     onCategorySuccessfulDelete: () -> Unit,
-    onLocationButton: (String) -> Unit,
-    onLocationBackButton: () -> Unit,
-    onLocationSuccessfulCreation: () -> Unit,
-    onLocationSuccessfulUpdate: () -> Unit,
-    onLocationSuccessfulDelete: () -> Unit,
     onDiscountButton: (String) -> Unit,
     onDiscountBackButton: () -> Unit,
     onDiscountVisualizerItemClick: (String, String) -> Unit,
@@ -84,7 +78,6 @@ fun NavGraphBuilder.mainGraph(
             onStoreUpdateButton = onStoreUpdateButton,
             onStoreVisualizerButton = onStoreVisualizerButton,
             onCategoryButton = onCategoryButton,
-            onLocationButton = onLocationButton,
             onDiscountButton = onDiscountButton,
             onProductButton = onProductButton
         )
@@ -118,13 +111,6 @@ fun NavGraphBuilder.mainGraph(
         categoryGeneralDetailedScreen(
             windowSizeClass = windowSizeClass,
             onBackButton = onCategoryGeneralItemDetailedBackButton
-        )
-        locationScreen(
-            windowSizeClass = windowSizeClass,
-            onLocationSuccessfulCreation = onLocationSuccessfulCreation,
-            onLocationSuccessfulUpdate = onLocationSuccessfulUpdate,
-            onLocationSuccessfulDelete = onLocationSuccessfulDelete,
-            onBackButton = onLocationBackButton
         )
         discountScreen(
             windowSizeClass = windowSizeClass,
@@ -181,7 +167,6 @@ fun NavGraphBuilder.homeScreen(
     onStoreUpdateButton: (String) -> Unit,
     onStoreVisualizerButton: (String) -> Unit,
     onCategoryButton: (String) -> Unit,
-    onLocationButton: (String) -> Unit,
     onDiscountButton: (String) -> Unit,
     onProductButton: (String, String) -> Unit
 ) {
@@ -191,7 +176,6 @@ fun NavGraphBuilder.homeScreen(
             onStoreUpdateButton = onStoreUpdateButton,
             onStoreVisualizerButton = onStoreVisualizerButton,
             onCategoryButton = onCategoryButton,
-            onLocationButton = onLocationButton,
             onDiscountButton = onDiscountButton,
             onProductButton = onProductButton
         )
@@ -245,7 +229,6 @@ fun NavGraphBuilder.storeVisualizerScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.categoryScreen(
     windowSizeClass: WindowSizeClass,
     onCategoryVisualizerItemClick: (String, String) -> Unit,
@@ -296,26 +279,6 @@ fun NavGraphBuilder.categoryGeneralDetailedScreen(
         CategoryTabGeneralItemDetailed(
             windowSizeClass = windowSizeClass,
             categoryId = result.categoryId,
-            onBackButton = onBackButton
-        )
-    }
-}
-
-fun NavGraphBuilder.locationScreen(
-    windowSizeClass: WindowSizeClass,
-    onLocationSuccessfulCreation: () -> Unit,
-    onLocationSuccessfulUpdate: () -> Unit,
-    onLocationSuccessfulDelete: () -> Unit,
-    onBackButton: () -> Unit
-) {
-    composable<Screen.MainSerializable.Location> {
-        val result = it.toRoute<Screen.MainSerializable.Location>()
-        LocationScreen(
-            windowSizeClass = windowSizeClass,
-            storeId = result.storeId,
-            onLocationSuccessfulCreation = onLocationSuccessfulCreation,
-            onLocationSuccessfulUpdate = onLocationSuccessfulUpdate,
-            onLocationSuccessfulDelete = onLocationSuccessfulDelete,
             onBackButton = onBackButton
         )
     }

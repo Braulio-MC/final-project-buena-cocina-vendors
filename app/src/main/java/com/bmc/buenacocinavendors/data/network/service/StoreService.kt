@@ -44,7 +44,7 @@ class StoreService @Inject constructor(
                     "name" to dto.name,
                     "description" to dto.description,
                     "email" to dto.email,
-                    "image" to result.data,
+                    "image" to result.getData(),
                     "phoneNumber" to dto.phoneNumber,
                     "userId" to dto.userId,
                     "paginationKey" to UUID.randomUUID().toString(),
@@ -93,7 +93,7 @@ class StoreService @Inject constructor(
                         "email" to dto.email,
                         "phoneNumber" to dto.phoneNumber,
                         "userId" to dto.userId,
-                        "image" to result.data,
+                        "image" to result.getData(),
                         "updatedAt" to FieldValue.serverTimestamp()
                     )
                     docRef.update(update)

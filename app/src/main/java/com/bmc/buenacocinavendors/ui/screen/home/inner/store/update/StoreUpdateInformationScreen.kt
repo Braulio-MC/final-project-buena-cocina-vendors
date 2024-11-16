@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bmc.buenacocinavendors.R
-import com.bmc.buenacocinavendors.core.API_SERVER_CACHE_TIME_IN_MIN
 import com.bmc.buenacocinavendors.core.MAXIMUM_EMAIL_LENGTH
 import com.bmc.buenacocinavendors.core.MAXIMUM_PHONE_NUMBER_LENGTH
 import com.bmc.buenacocinavendors.core.STORE_REGISTRATION_MAXIMUM_STORE_DESCRIPTION_LENGTH

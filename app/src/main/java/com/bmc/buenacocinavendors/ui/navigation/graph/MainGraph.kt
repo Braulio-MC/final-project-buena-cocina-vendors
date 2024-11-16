@@ -19,7 +19,6 @@ fun MainGraph(
     onCategoryBackButton: () -> Unit,
     onCategoryVisualizerItemDetailedBackButton: () -> Unit,
     onCategoryGeneralItemDetailedBackButton: () -> Unit,
-    onLocationBackButton: () -> Unit,
     onDiscountBackButton: () -> Unit,
     onDiscountVisualizerItemDetailedBackButton: () -> Unit,
     onProductBackButton: () -> Unit,
@@ -105,36 +104,6 @@ fun MainGraph(
             onCategorySuccessfulDelete = {
                 navController.navigate(Screen.Main.Home.route) {
                     popUpTo<Screen.MainSerializable.Category> {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
-            },
-            onLocationButton = { storeId ->
-                navController.navigate(Screen.MainSerializable.Location(storeId)) {
-                    launchSingleTop = true
-                }
-            },
-            onLocationBackButton = onLocationBackButton,
-            onLocationSuccessfulCreation = {
-                navController.navigate(Screen.Main.Home.route) {
-                    popUpTo<Screen.MainSerializable.Location> {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
-            },
-            onLocationSuccessfulUpdate = {
-                navController.navigate(Screen.Main.Home.route) {
-                    popUpTo<Screen.MainSerializable.Location> {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
-            },
-            onLocationSuccessfulDelete = {
-                navController.navigate(Screen.Main.Home.route) {
-                    popUpTo<Screen.MainSerializable.Location> {
                         inclusive = true
                     }
                     launchSingleTop = true

@@ -1,117 +1,56 @@
 package com.bmc.buenacocinavendors.data.network.service
 
-import com.bmc.buenacocinavendors.core.LOCATION_COLLECTION_NAME
-import com.bmc.buenacocinavendors.data.network.dto.CreateLocationDto
-import com.bmc.buenacocinavendors.data.network.dto.UpdateLocationDto
-import com.bmc.buenacocinavendors.data.network.model.LocationNetwork
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.functions.FirebaseFunctions
+import android.annotation.SuppressLint
+import android.content.Context
+import android.location.Location
+import android.os.Looper
+import com.bmc.buenacocinavendors.domain.exception.LocationPermissionException
+import com.bmc.buenacocinavendors.domain.hasLocationPermission
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationAvailability
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.Priority
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import java.util.UUID
 import javax.inject.Inject
 
 class LocationService @Inject constructor(
-    private val firestore: FirebaseFirestore,
-    private val functions: FirebaseFunctions
+    @ApplicationContext private val context: Context,
+    private val client: FusedLocationProviderClient
 ) {
-    fun create(
-        dto: CreateLocationDto,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
-        val docRef = firestore.collection(LOCATION_COLLECTION_NAME).document()
-        val new = hashMapOf(
-            "id" to docRef.id,
-            "name" to dto.name,
-            "description" to dto.description,
-            "storeId" to dto.storeId,
-            "paginationKey" to UUID.randomUUID().toString(),
-            "createdAt" to FieldValue.serverTimestamp(),
-            "updatedAt" to FieldValue.serverTimestamp()
-        )
-        docRef.set(new)
-            .addOnSuccessListener {
-                onSuccess()
+    @SuppressLint("MissingPermission")
+    fun getLocationUpdates(interval: Long): Flow<Location?> = callbackFlow {
+        if (!context.hasLocationPermission()) {
+            close(LocationPermissionException("Missing location permission"))
+        }
+        val request = LocationRequest
+            .Builder(Priority.PRIORITY_HIGH_ACCURACY, interval)
+            .setWaitForAccurateLocation(true)
+            .setMinUpdateIntervalMillis(interval)
+            .setMaxUpdateDelayMillis(interval * 2)
+            .build()
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                super.onLocationResult(result)
+                trySend(result.lastLocation)
             }
-            .addOnFailureListener { e ->
-                onFailure(e)
-            }
-    }
 
-    fun update(
-        id: String,
-        dto: UpdateLocationDto,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
-        val update = hashMapOf(
-            "id" to id,
-            "name" to dto.name,
-            "description" to dto.description,
-            "storeId" to dto.storeId
-        )
-        functions
-            .getHttpsCallable("location-update")
-            .call(update)
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener { e ->
-                onFailure(e)
-            }
-    }
-
-    fun delete(
-        id: String,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
-        val delete = hashMapOf(
-            "id" to id
-        )
-        functions
-            .getHttpsCallable("location-remove")
-            .call(delete)
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener { e ->
-                onFailure(e)
-            }
-    }
-
-    fun get(id: String): Flow<LocationNetwork?> = callbackFlow {
-        val docRef = firestore.collection(LOCATION_COLLECTION_NAME).document(id)
-        val listener = docRef.addSnapshotListener { snapshot, e ->
-            if (e != null) {
-                close(e)
-            } else if (snapshot != null && snapshot.exists()) {
-                val location = snapshot.toObject(LocationNetwork::class.java)
-                trySend(location)
-            } else {
-                trySend(null)
+            override fun onLocationAvailability(availability: LocationAvailability) {
+                super.onLocationAvailability(availability)
+                if (!availability.isLocationAvailable) {
+                    trySend(null)
+                }
             }
         }
-        awaitClose { listener.remove() }
-    }
-
-    fun get(query: (Query) -> Query = { it }): Flow<List<LocationNetwork>> = callbackFlow {
-        val ref = firestore.collection(LOCATION_COLLECTION_NAME)
-        val q = query(ref)
-        val listener = q.addSnapshotListener { snapshot, e ->
-            if (e != null) {
-                close(e)
-            } else if (snapshot != null && !snapshot.isEmpty) {
-                val locations = snapshot.toObjects(LocationNetwork::class.java)
-                trySend(locations)
-            } else {
-                trySend(emptyList())
-            }
-        }
-        awaitClose { listener.remove() }
+        client.requestLocationUpdates(
+            request,
+            locationCallback,
+            Looper.getMainLooper()
+        ).addOnFailureListener { e -> close(e) }
+        awaitClose { client.removeLocationUpdates(locationCallback) }
     }
 }

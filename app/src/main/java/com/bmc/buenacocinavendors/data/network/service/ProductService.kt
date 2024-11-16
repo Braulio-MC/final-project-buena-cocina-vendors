@@ -44,7 +44,7 @@ class ProductService @Inject constructor(
                     "name" to dto.name,
                     "description" to dto.description,
                     "price" to dto.price,
-                    "image" to result.data,
+                    "image" to result.getData(),
                     "quantity" to dto.quantity,
                     "category" to hashMapOf(
                         "id" to dto.category.id,
@@ -107,7 +107,7 @@ class ProductService @Inject constructor(
                         "name" to dto.name,
                         "description" to dto.description,
                         "price" to dto.price,
-                        "image" to result.data,
+                        "image" to result.getData(),
                         "quantity" to dto.quantity,
                         "categoryId" to dto.category.id,
                         "categoryName" to dto.category.name,

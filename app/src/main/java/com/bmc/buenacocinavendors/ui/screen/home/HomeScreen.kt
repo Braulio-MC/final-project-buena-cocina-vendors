@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.Discount
 import androidx.compose.material.icons.outlined.Fastfood
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Icon
@@ -60,7 +59,6 @@ fun HomeScreen(
     onStoreUpdateButton: (String) -> Unit,
     onStoreVisualizerButton: (String) -> Unit,
     onCategoryButton: (String) -> Unit,
-    onLocationButton: (String) -> Unit,
     onDiscountButton: (String) -> Unit,
     onProductButton: (String, String) -> Unit
 ) {
@@ -77,7 +75,6 @@ fun HomeScreen(
         onStoreUpdateButton = onStoreUpdateButton,
         onStoreVisualizerButton = onStoreVisualizerButton,
         onCategoryButton = onCategoryButton,
-        onLocationButton = onLocationButton,
         onDiscountButton = onDiscountButton,
         onProductButton = onProductButton
     )
@@ -92,7 +89,6 @@ fun HomeScreenContent(
     onStoreUpdateButton: (String) -> Unit,
     onStoreVisualizerButton: (String) -> Unit,
     onCategoryButton: (String) -> Unit,
-    onLocationButton: (String) -> Unit,
     onDiscountButton: (String) -> Unit,
     onProductButton: (String, String) -> Unit
 ) {
@@ -309,34 +305,6 @@ fun HomeScreenContent(
                         )
                         Text(
                             text = "Categorias",
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            color = Color.Black,
-                            fontWeight = FontWeight.SemiBold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .padding(top = 8.dp)
-                        )
-                    }
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .padding(5.dp)
-                            .weight(0.25f)
-                            .clickable { onLocationButton(uiState.store.id) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.LocationOn,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(60.dp)
-                                .background(Color.Gray, shape = RoundedCornerShape(10.dp))
-                                .padding(5.dp)
-                        )
-                        Text(
-                            text = "Direcciones",
                             textAlign = TextAlign.Center,
                             fontSize = 14.sp,
                             color = Color.Black,

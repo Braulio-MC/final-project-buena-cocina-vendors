@@ -47,7 +47,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -56,11 +55,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.bmc.buenacocinavendors.R
-import com.bmc.buenacocinavendors.core.API_SERVER_CACHE_TIME_IN_MIN
 import com.bmc.buenacocinavendors.core.DateUtils
 import com.bmc.buenacocinavendors.core.TimeUtils
-import com.bmc.buenacocinavendors.core.makeBulletedList
 import com.bmc.buenacocinavendors.ui.screen.common.TimePickerDialog
 import com.bmc.buenacocinavendors.ui.viewmodel.DiscountTabAddViewModel
 
