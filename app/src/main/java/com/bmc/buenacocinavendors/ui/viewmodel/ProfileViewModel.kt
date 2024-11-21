@@ -16,6 +16,7 @@ import com.bmc.buenacocinavendors.domain.repository.ConnectivityRepository
 import com.bmc.buenacocinavendors.domain.repository.UserRepository
 import com.bmc.buenacocinavendors.domain.Result
 import com.bmc.buenacocinavendors.domain.repository.ChatRepository
+import com.bmc.buenacocinavendors.domain.repository.TokenRepository
 import com.bmc.buenacocinavendors.ui.screen.profile.ProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +35,7 @@ class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val preferencesService: PreferencesService,
     private val chatRepository: ChatRepository,
+    private val tokenRepository: TokenRepository,
     connectivityRepository: ConnectivityRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -81,6 +83,10 @@ class ProfileViewModel @Inject constructor(
 
                 override fun onSuccess(result: Void?) {
                     viewModelScope.launch {
+                        tokenRepository.remove(
+                            onSuccess = { },
+                            onFailure = { }
+                        )
                         auth0Manager.clearCredentials()
                         chatRepository.disconnectUser()
                         preferencesService.clearUserCredentials()
