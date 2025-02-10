@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +19,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,6 +41,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,6 +52,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bmc.buenacocinavendors.R
 import com.bmc.buenacocinavendors.ui.viewmodel.DetailedOrderRatingViewModel
+import com.smarttoolfactory.ratingbar.RatingBar
+import com.smarttoolfactory.ratingbar.model.GestureStrategy
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -135,7 +141,6 @@ fun DetailedOrderRatingScreenContent(
                 )
                 Spacer(modifier = Modifier.height(15.dp))
                 if (uiState.storeRating != null) {
-                    val storeRatingFormat = DecimalFormat("#.#").format(uiState.storeRating.rating)
                     Text(
                         text = "Calificacion para la tienda",
                         fontSize = 22.sp,
@@ -145,13 +150,18 @@ fun DetailedOrderRatingScreenContent(
                         modifier = Modifier
                             .padding(horizontal = 10.dp)
                     )
-                    Text(
-                        text = "Se califico la tienda con $storeRatingFormat de 5 estrellas",
-                        textAlign = TextAlign.Center,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
+                    RatingBar(
+                        rating = uiState.storeRating.rating,
+                        imageVectorEmpty = Icons.Outlined.StarBorder,
+                        imageVectorFilled = Icons.Outlined.Star,
+                        space = 2.dp,
+                        itemSize = 30.dp,
+                        tintEmpty = colorResource(id = R.color.rating_bar_empty),
+                        tintFilled = colorResource(id = R.color.rating_bar_filled),
+                        gestureStrategy = GestureStrategy.None,
+                        onRatingChange = {},
                         modifier = Modifier
-                            .padding(10.dp)
+                            .padding(5.dp)
                     )
                     LazyColumn(
                         modifier = Modifier

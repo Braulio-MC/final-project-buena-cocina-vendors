@@ -19,7 +19,7 @@ object FirebaseModule {
     @Singleton
     fun provideFirebaseFirestore(): FirebaseFirestore {
         val firestore = FirebaseFirestore.getInstance()
-        firestore.useEmulator("10.0.2.2", 8080)
+        // firestore.useEmulator("10.0.2.2", 8080)
         return firestore
     }
 

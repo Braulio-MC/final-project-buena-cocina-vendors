@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,6 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,8 +36,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.bmc.buenacocinavendors.R
 import com.bmc.buenacocinavendors.core.DateUtils
 import com.bmc.buenacocinavendors.domain.model.ProductReviewDomain
+import com.smarttoolfactory.ratingbar.RatingBar
+import com.smarttoolfactory.ratingbar.model.GestureStrategy
 import java.text.DecimalFormat
 
 @Composable
@@ -78,13 +86,18 @@ fun DetailedOrderRatingItemDialog(
                             .padding(10.dp)
                             .size(130.dp)
                     )
-                    Text(
-                        text = "Se califico el producto con $rating de 5 estrellas",
-                        textAlign = TextAlign.Center,
-                        fontSize = 17.5.sp,
-                        fontWeight = FontWeight.SemiBold,
+                    RatingBar(
+                        rating = productReview.rating,
+                        imageVectorEmpty = Icons.Outlined.StarBorder,
+                        imageVectorFilled = Icons.Outlined.Star,
+                        space = 2.dp,
+                        itemSize = 25.dp,
+                        tintEmpty = colorResource(id = R.color.rating_bar_empty),
+                        tintFilled = colorResource(id = R.color.rating_bar_filled),
+                        gestureStrategy = GestureStrategy.None,
+                        onRatingChange = {},
                         modifier = Modifier
-                            .padding(horizontal = 10.dp)
+                            .padding(3.dp)
                     )
                     Box(
                         modifier = Modifier

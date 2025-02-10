@@ -225,6 +225,9 @@ fun ProductTabVisualizerItemPreview() {
                     name = "Hamburger",
                     parentName = ""
                 ),
+                rating = BigDecimal.ZERO,
+                totalRating = BigDecimal.ZERO,
+                totalReviews = BigInteger.ZERO,
                 createdAt = LocalDateTime.now(),
                 updatedAt = LocalDateTime.now()
             ),

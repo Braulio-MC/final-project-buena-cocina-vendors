@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.getstream.push.firebase)
     implementation(libs.coil.compose.coil)
     implementation(libs.androidx.security.crypto)
+    implementation(libs.compose.ratingbar)
     implementation(libs.androidx.documentfile)
     implementation(libs.androidx.compose.constraintlayout)
     implementation(libs.androidx.core.splashscreen)

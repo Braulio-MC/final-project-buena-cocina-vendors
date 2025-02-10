@@ -1,10 +1,10 @@
 package com.bmc.buenacocinavendors.ui.screen.home.inner.store.visualizer
 
+import android.icu.text.DecimalFormat
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,9 +63,9 @@ import coil.request.ImageRequest
 import com.bmc.buenacocinavendors.R
 import com.bmc.buenacocinavendors.core.NetworkStatus
 import com.bmc.buenacocinavendors.domain.model.ProductDomain
-import com.bmc.buenacocinavendors.ui.screen.common.NoInternetScreen
 import com.bmc.buenacocinavendors.ui.viewmodel.StoreVisualizerViewModel
 import kotlinx.coroutines.flow.map
+import java.math.RoundingMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,6 +148,8 @@ fun StoreVisualizerScreenContent(
             )
         } else {
             if (uiState.store != null) {
+                val storeRating =
+                    uiState.store.rating.setScale(1, RoundingMode.HALF_DOWN).toPlainString()
                 Column(
                     modifier = Modifier
                         .padding(paddingValues)
@@ -204,7 +206,7 @@ fun StoreVisualizerScreenContent(
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 Text(
-                                    text = "N/A",
+                                    text = storeRating,
                                     fontSize = 25.sp,
                                     color = Color.Black,
                                     fontWeight = FontWeight.Bold,

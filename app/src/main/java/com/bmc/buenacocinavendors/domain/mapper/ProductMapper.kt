@@ -28,6 +28,9 @@ object ProductMapper {
                 name = network.category.name,
                 parentName = network.category.parentName
             ),
+            rating = network.rating.toBigDecimal(),
+            totalRating = network.totalRating.toBigDecimal(),
+            totalReviews = network.totalReviews.toBigInteger(),
             createdAt = DateUtils.firebaseTimestampToLocalDateTime(network.createdAt),
             updatedAt = DateUtils.firebaseTimestampToLocalDateTime(network.updatedAt)
         )

@@ -175,6 +175,9 @@ fun CategoryTabVisualizerItemProductPreview() {
                     id = "1",
                     name = "La Cuchara Verde"
                 ),
+                rating = BigDecimal.ZERO,
+                totalRating = BigDecimal.ZERO,
+                totalReviews = BigInteger.ZERO,
                 category = ProductDomain.ProductCategoryDomain(
                     id = "1",
                     name = "Hamburger",

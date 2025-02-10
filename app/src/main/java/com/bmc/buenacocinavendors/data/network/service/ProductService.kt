@@ -61,6 +61,9 @@ class ProductService @Inject constructor(
                         "startDate" to dto.discount.startDate,
                         "endDate" to dto.discount.endDate
                     ),
+                    "rating" to 0.0,
+                    "totalRating" to 0.0,
+                    "totalReviews" to 0,
                     "paginationKey" to UUID.randomUUID().toString(),
                     "createdAt" to FieldValue.serverTimestamp(),
                     "updatedAt" to FieldValue.serverTimestamp()
