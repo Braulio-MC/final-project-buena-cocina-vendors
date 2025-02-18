@@ -81,7 +81,7 @@ class HomeViewModel @Inject constructor(
             is Result.Success -> {
                 val q: (Query) -> Query = { query ->
                     query.whereEqualTo("userId", result.data)
-                    query.limit(1)
+                        .limit(1)
                 }
                 storeRepository.get(q)
             }
