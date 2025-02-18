@@ -1,6 +1,5 @@
 package com.bmc.buenacocinavendors.ui.viewmodel
 
-import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -42,7 +41,8 @@ class ProductTabUpdateViewModel @AssistedInject constructor(
     private val validateDiscount: ValidateDiscount,
     private val productRepository: ProductRepository,
     @Assisted("storeId") private val storeId: String,
-    @Assisted("storeName") private val storeName: String
+    @Assisted("storeName") private val storeName: String,
+    @Assisted("storeOwnerId") private val storeOwnerId: String
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProductTabUpdateUiState())
     val uiState = _uiState.asStateFlow()
@@ -216,7 +216,8 @@ class ProductTabUpdateViewModel @AssistedInject constructor(
             ),
             store = UpdateProductDto.UpdateProductStoreDto(
                 id = storeId,
-                name = storeName
+                name = storeName,
+                ownerId = storeOwnerId
             ),
             discount = UpdateProductDto.UpdateProductDiscountDto(
                 useDefault = _uiState.value.useDefaultDiscount,
@@ -251,7 +252,8 @@ class ProductTabUpdateViewModel @AssistedInject constructor(
     interface ProductTabUpdateViewModelFactory {
         fun create(
             @Assisted("storeId") storeId: String,
-            @Assisted("storeName") storeName: String
+            @Assisted("storeName") storeName: String,
+            @Assisted("storeOwnerId") storeOwnerId: String
         ): ProductTabUpdateViewModel
     }
 

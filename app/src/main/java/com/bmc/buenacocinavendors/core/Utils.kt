@@ -7,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,9 +16,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -29,6 +34,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import com.bmc.buenacocinavendors.R
 import com.google.firebase.Timestamp
 import java.io.ByteArrayOutputStream
@@ -64,6 +70,30 @@ fun getOrderStatusLevel(status: String): Int {
         OrderStatus.DELIVERED.status -> ORDER_STATUS_DELIVERED_LEVEL
         OrderStatus.ERROR.status -> ORDER_STATUS_ERROR_LEVEL
         else -> ORDER_STATUS_UNASSIGNED_LEVEL
+    }
+}
+
+fun bubbleShape(): GenericShape {
+    return GenericShape { size: Size, _: LayoutDirection ->
+        val cornerRadius = 24f
+        val triangleSize = 20f
+
+        val path = Path().apply {
+            addRoundRect(
+                RoundRect(
+                    left = 0f,
+                    top = 0f,
+                    right = size.width,
+                    bottom = size.height - triangleSize,
+                    cornerRadius = CornerRadius(cornerRadius, cornerRadius)
+                )
+            )
+            moveTo(size.width / 2 - triangleSize / 2, size.height - triangleSize)
+            lineTo(size.width / 2, size.height)
+            lineTo(size.width / 2 + triangleSize / 2, size.height - triangleSize)
+            close()
+        }
+        addPath(path)
     }
 }
 
@@ -223,6 +253,12 @@ class DateUtils {
             endDate: LocalDateTime
         ): Boolean {
             return date.isAfter(startDate) && date.isBefore(endDate)
+        }
+
+        fun iso8601UTCStringDateToLocalDate(date: String): LocalDate {
+            val utcZonedDateTime = LocalDate.parse(date).atStartOfDay(ZoneId.of("UTC"))
+            val localZonedDateTime = utcZonedDateTime.withZoneSameInstant(ZoneId.systemDefault())
+            return localZonedDateTime.toLocalDate()
         }
     }
 }

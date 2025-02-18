@@ -63,7 +63,6 @@ import com.bmc.buenacocinavendors.domain.model.CategoryDomain
 import com.bmc.buenacocinavendors.domain.model.DiscountDomain
 import com.bmc.buenacocinavendors.ui.screen.home.inner.category.tabs.CategoryEmpty
 import com.bmc.buenacocinavendors.ui.screen.home.inner.category.tabs.CategoryItemShimmer
-import com.bmc.buenacocinavendors.ui.screen.home.inner.category.tabs.add.CategoryTabAddIntent
 import com.bmc.buenacocinavendors.ui.screen.home.inner.discount.tabs.DiscountEmpty
 import com.bmc.buenacocinavendors.ui.screen.home.inner.discount.tabs.DiscountItemShimmer
 import com.bmc.buenacocinavendors.ui.viewmodel.ProductTabAddViewModel
@@ -73,10 +72,11 @@ fun ProductTabAdd(
     windowSizeClass: WindowSizeClass,
     storeId: String,
     storeName: String,
+    storeOwnerId: String,
     snackbarHostState: SnackbarHostState,
     viewModel: ProductTabAddViewModel = hiltViewModel(
         creationCallback = { factory: ProductTabAddViewModel.ProductTabAddViewModelFactory ->
-            factory.create(storeId, storeName)
+            factory.create(storeId, storeName, storeOwnerId)
         }
     ),
     scrollState: ScrollState = rememberScrollState(),

@@ -1,6 +1,5 @@
 package com.bmc.buenacocinavendors.ui.screen.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -28,13 +28,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,11 +44,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.bmc.buenacocinavendors.R
 import com.bmc.buenacocinavendors.core.NetworkStatus
+import com.bmc.buenacocinavendors.domain.model.InsightCalculateSalesByDayOfWeekDomain
 import com.bmc.buenacocinavendors.ui.screen.common.NoInternetScreen
 import com.bmc.buenacocinavendors.ui.viewmodel.HomeViewModel
-import kotlinx.coroutines.flow.map
 
 @Composable
 fun HomeScreen(
@@ -60,17 +58,21 @@ fun HomeScreen(
     onStoreVisualizerButton: (String) -> Unit,
     onCategoryButton: (String) -> Unit,
     onDiscountButton: (String) -> Unit,
-    onProductButton: (String, String) -> Unit
+    onProductButton: (String, String, String) -> Unit
 ) {
-    val uiState = viewModel.store()
-        .map { stores -> HomeUiState(store = stores.firstOrNull()) }
-        .collectAsStateWithLifecycle(initialValue = HomeUiState(isLoading = true))
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     val netState = viewModel.netState.collectAsStateWithLifecycle()
+    val weeklyMappedSalesState = viewModel.weeklyMappedSales.collectAsStateWithLifecycle()
+
+    LaunchedEffect(uiState.value.store?.id) {
+        viewModel.calculateSalesByDayOfWeek()
+    }
 
     HomeScreenContent(
         windowSizeClass = windowSizeClass,
         uiState = uiState.value,
         netState = netState.value,
+        weeklyMappedSalesState = weeklyMappedSalesState.value,
         scrollState = scrollState,
         onStoreUpdateButton = onStoreUpdateButton,
         onStoreVisualizerButton = onStoreVisualizerButton,
@@ -85,12 +87,13 @@ fun HomeScreenContent(
     windowSizeClass: WindowSizeClass,
     uiState: HomeUiState,
     netState: NetworkStatus,
+    weeklyMappedSalesState: List<Pair<String, InsightCalculateSalesByDayOfWeekDomain?>>,
     scrollState: ScrollState,
     onStoreUpdateButton: (String) -> Unit,
     onStoreVisualizerButton: (String) -> Unit,
     onCategoryButton: (String) -> Unit,
     onDiscountButton: (String) -> Unit,
-    onProductButton: (String, String) -> Unit
+    onProductButton: (String, String, String) -> Unit
 ) {
     if (uiState.isLoading) {
         HomeScreenShimmer()
@@ -225,61 +228,14 @@ fun HomeScreenContent(
                         }
                     }
                 }
-                ConstraintLayout(
+                HomeScreenWeeklySalesBarChart(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 24.dp, start = 24.dp, end = 24.dp)
-                        .shadow(3.dp, shape = RoundedCornerShape(25.dp))
-                        .height(145.dp)
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color.LightGray,
-                                    Color.Gray
-                                )
-                            ), shape = RoundedCornerShape(25.dp)
-                        )
-                        .clickable { }
-                ) {
-                    val (img, text1, text2) = createRefs()
-
-                    Image(
-                        painter = painterResource(id = R.drawable.ads),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(120.dp)
-                            .padding(end = 10.dp)
-                            .constrainAs(img) {
-                                top.linkTo(parent.top)
-                                end.linkTo(parent.end)
-                                bottom.linkTo(parent.bottom)
-                            }
-                    )
-                    Text(
-                        text = "¿Publicar un anuncio?",
-                        fontSize = 19.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .padding(top = 32.dp)
-                            .constrainAs(text1) {
-                                top.linkTo(parent.top)
-                                end.linkTo(img.start)
-                                start.linkTo(parent.start)
-                            }
-                    )
-                    Text(
-                        text = "Haz clic para saber mas",
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier
-                            .padding(top = 16.dp)
-                            .constrainAs(text2) {
-                                top.linkTo(text1.bottom)
-                                end.linkTo(text1.end)
-                                start.linkTo(text1.start)
-                            }
-                    )
-                }
+                        .padding(horizontal = 15.dp)
+                        .wrapContentHeight(),
+                    isWeeklyMappedSalesLoading = uiState.isLoadingWeeklySales,
+                    weeklyMappedSalesState = weeklyMappedSalesState
+                )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
@@ -349,7 +305,13 @@ fun HomeScreenContent(
                         modifier = Modifier
                             .padding(5.dp)
                             .weight(0.25f)
-                            .clickable { onProductButton(uiState.store.id, uiState.store.name) }
+                            .clickable {
+                                onProductButton(
+                                    uiState.store.id,
+                                    uiState.store.name,
+                                    uiState.store.userId
+                                )
+                            }
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Fastfood,

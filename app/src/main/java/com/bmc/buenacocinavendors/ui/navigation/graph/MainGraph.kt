@@ -150,8 +150,14 @@ fun MainGraph(
                     launchSingleTop = true
                 }
             },
-            onProductButton = { storeId, storeName ->
-                navController.navigate(Screen.MainSerializable.Product(storeId, storeName)) {
+            onProductButton = { storeId, storeName, storeOwnerId ->
+                navController.navigate(
+                    Screen.MainSerializable.Product(
+                        storeId,
+                        storeName,
+                        storeOwnerId
+                    )
+                ) {
                     launchSingleTop = true
                 }
             },
@@ -182,7 +188,13 @@ fun MainGraph(
             },
             onOrderBackButton = onOrderBackButton,
             onOrderItemClick = { orderId, userId, storeId ->
-                navController.navigate(Screen.MainSerializable.OrderDetailed(orderId, userId, storeId)) {
+                navController.navigate(
+                    Screen.MainSerializable.OrderDetailed(
+                        orderId,
+                        userId,
+                        storeId
+                    )
+                ) {
                     launchSingleTop = true
                 }
             },
@@ -196,7 +208,13 @@ fun MainGraph(
                 }
             },
             onOrderDetailedOrderRatedButton = { orderId, userId, storeId ->
-                navController.navigate(Screen.MainSerializable.OrderRated(orderId, userId, storeId)) {
+                navController.navigate(
+                    Screen.MainSerializable.OrderRated(
+                        orderId,
+                        userId,
+                        storeId
+                    )
+                ) {
                     launchSingleTop = true
                 }
             },

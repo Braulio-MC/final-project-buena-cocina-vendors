@@ -75,10 +75,11 @@ fun ProductTabUpdate(
     windowSizeClass: WindowSizeClass,
     storeId: String,
     storeName: String,
+    storeOwnerId: String,
     snackbarHostState: SnackbarHostState,
     viewModel: ProductTabUpdateViewModel = hiltViewModel(
         creationCallback = { factory: ProductTabUpdateViewModel.ProductTabUpdateViewModelFactory ->
-            factory.create(storeId, storeName)
+            factory.create(storeId, storeName, storeOwnerId)
         }
     ),
     scrollState: ScrollState = rememberScrollState(),

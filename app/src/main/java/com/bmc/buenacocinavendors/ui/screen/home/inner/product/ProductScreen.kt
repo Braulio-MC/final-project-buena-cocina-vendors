@@ -48,6 +48,7 @@ fun ProductScreen(
     windowSizeClass: WindowSizeClass,
     storeId: String,
     storeName: String,
+    storeOwnerId: String,
     viewModel: ProductViewModel = hiltViewModel(
         creationCallback = { factory: ProductViewModel.ProductViewModelFactory ->
             factory.create(storeId)
@@ -75,6 +76,7 @@ fun ProductScreen(
         windowSizeClass = windowSizeClass,
         storeId = storeId,
         storeName = storeName,
+        storeOwnerId = storeOwnerId,
         snackbarHostState = snackbarHostState,
         pagerState = pagerState,
         coroutineScope = coroutineScope,
@@ -96,6 +98,7 @@ fun ProductScreenContent(
     windowSizeClass: WindowSizeClass,
     storeId: String,
     storeName: String,
+    storeOwnerId: String,
     snackbarHostState: SnackbarHostState,
     pagerState: PagerState,
     coroutineScope: CoroutineScope,
@@ -182,6 +185,7 @@ fun ProductScreenContent(
                             windowSizeClass = windowSizeClass,
                             storeId = storeId,
                             storeName = storeName,
+                            storeOwnerId = storeOwnerId,
                             snackbarHostState = snackbarHostState,
                             categories = categories,
                             generalCategories = generalCategories,
@@ -196,6 +200,7 @@ fun ProductScreenContent(
                             windowSizeClass = windowSizeClass,
                             storeId = storeId,
                             storeName = storeName,
+                            storeOwnerId = storeOwnerId,
                             snackbarHostState = snackbarHostState,
                             products = products,
                             categories = categories,

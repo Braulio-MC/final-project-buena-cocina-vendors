@@ -168,10 +168,12 @@ fun DetailedOrderScreen(
         DetailedOrderLocationDialog(
             isDialogOpen = showOrderLocationDialog,
             isLoadingUserLocation = uiState.value.isLoadingUserLocation,
+            isTopLocationsOnMapLoading = uiState.value.isLoadingTopLocationsOnMap,
             cuceiCenter = uiState.value.cuceiCenterOnMap!!,
             cuceiBounds = uiState.value.cuceiAreaBoundsOnMap!!,
             orderLocation = uiState.value.order?.deliveryLocation?.asLatLng(),
             currentUserLocation = uiState.value.userLocation,
+            topLocationsOnMap = uiState.value.topLocationsOnMap,
             onDismiss = { showOrderLocationDialog = false }
         )
     }

@@ -53,7 +53,7 @@ fun NavGraphBuilder.mainGraph(
     onDiscountSuccessfulCreation: () -> Unit,
     onDiscountSuccessfulUpdate: () -> Unit,
     onDiscountSuccessfulDelete: () -> Unit,
-    onProductButton: (String, String) -> Unit,
+    onProductButton: (String, String, String) -> Unit,
     onProductBackButton: () -> Unit,
     onProductSuccessfulCreation: () -> Unit,
     onProductSuccessfulUpdate: () -> Unit,
@@ -168,7 +168,7 @@ fun NavGraphBuilder.homeScreen(
     onStoreVisualizerButton: (String) -> Unit,
     onCategoryButton: (String) -> Unit,
     onDiscountButton: (String) -> Unit,
-    onProductButton: (String, String) -> Unit
+    onProductButton: (String, String, String) -> Unit
 ) {
     composable(Screen.Main.Home.route) {
         HomeScreen(
@@ -335,6 +335,7 @@ fun NavGraphBuilder.productScreen(
             windowSizeClass = windowSizeClass,
             storeId = result.storeId,
             storeName = result.storeName,
+            storeOwnerId = result.storeOwnerId,
             onProductSuccessfulCreation = onProductSuccessfulCreation,
             onProductSuccessfulUpdate = onProductSuccessfulUpdate,
             onProductSuccessfulDelete = onProductSuccessfulDelete,

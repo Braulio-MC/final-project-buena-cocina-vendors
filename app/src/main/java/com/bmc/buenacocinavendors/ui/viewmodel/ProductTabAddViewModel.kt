@@ -39,6 +39,7 @@ class ProductTabAddViewModel @AssistedInject constructor(
     private val productRepository: ProductRepository,
     @Assisted("storeId") private val storeId: String,
     @Assisted("storeName") private val storeName: String,
+    @Assisted("storeOwnerId") private val storeOwnerId: String
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProductTabAddUiState())
     val uiState = _uiState.asStateFlow()
@@ -182,7 +183,8 @@ class ProductTabAddViewModel @AssistedInject constructor(
             ),
             store = CreateProductDto.CreateProductStoreDto(
                 id = storeId,
-                name = storeName
+                name = storeName,
+                ownerId = storeOwnerId
             ),
             discount = CreateProductDto.CreateProductDiscountDto(
                 id = _uiState.value.discount!!.id,
@@ -215,7 +217,8 @@ class ProductTabAddViewModel @AssistedInject constructor(
     interface ProductTabAddViewModelFactory {
         fun create(
             @Assisted("storeId") storeId: String,
-            @Assisted("storeName") storeName: String
+            @Assisted("storeName") storeName: String,
+            @Assisted("storeOwnerId") storeOwnerId: String
         ): ProductTabAddViewModel
     }
 

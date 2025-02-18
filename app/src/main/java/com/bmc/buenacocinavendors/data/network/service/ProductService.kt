@@ -53,7 +53,8 @@ class ProductService @Inject constructor(
                     ),
                     "store" to hashMapOf(
                         "id" to dto.store.id,
-                        "name" to dto.store.name
+                        "name" to dto.store.name,
+                        "ownerId" to dto.store.ownerId
                     ),
                     "discount" to hashMapOf(
                         "id" to dto.discount.id,
@@ -117,6 +118,7 @@ class ProductService @Inject constructor(
                         "categoryParentName" to dto.category.parentName,
                         "storeId" to dto.store.id,
                         "storeName" to dto.store.name,
+                        "storeOwnerId" to dto.store.ownerId,
                         "usingDefaultDiscount" to dto.discount.useDefault,
                         "discountId" to dto.discount.id,
                         "discountPercentage" to dto.discount.percentage,
@@ -150,6 +152,7 @@ class ProductService @Inject constructor(
                 "categoryParentName" to dto.category.parentName,
                 "storeId" to dto.store.id,
                 "storeName" to dto.store.name,
+                "storeOwnerId" to dto.store.ownerId,
                 "usingDefaultDiscount" to dto.discount.useDefault,
                 "discountId" to dto.discount.id,
                 "discountPercentage" to dto.discount.percentage,

@@ -9,6 +9,9 @@
     <!-- Api server -->
     <string name="base_api_server_url">http://10.0.2.2:5001</string>
 
+    <!-- Py Api server -->
+    <string name="py_api_server_url">http://10.0.2.2:8000</string>
+
     <!-- Common -->
     <string name="common_no_internet_error">No hay conexion a internet\n\nComprueba tu fuente de internet y vuelve a intentarlo</string>
 

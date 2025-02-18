@@ -22,7 +22,8 @@ data class UpdateProductDto(
 
     data class UpdateProductStoreDto(
         val id: String,
-        val name: String
+        val name: String,
+        val ownerId: String
     )
 
     data class UpdateProductDiscountDto(

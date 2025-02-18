@@ -16,6 +16,7 @@ import com.bmc.buenacocinavendors.domain.isGpsOrNetworkEnabledFlow
 import com.bmc.buenacocinavendors.domain.mapper.asFormErrorUiText
 import com.bmc.buenacocinavendors.domain.mapper.asLatLng
 import com.bmc.buenacocinavendors.domain.model.OrderLineDomain
+import com.bmc.buenacocinavendors.domain.repository.InsightRepository
 import com.bmc.buenacocinavendors.domain.repository.OrderLineRepository
 import com.bmc.buenacocinavendors.domain.repository.RemoteConfigRepository
 import com.bmc.buenacocinavendors.domain.usecase.CreateGetStreamChannel
@@ -60,6 +61,7 @@ class DetailedOrderViewModel @AssistedInject constructor(
     private val orderRepository: OrderRepository,
     private val orderLineRepository: OrderLineRepository,
     private val locationService: LocationService,
+    private val insightRepository: InsightRepository,
     connectivityRepository: ConnectivityRepository,
     @Assisted private val orderId: String
 ) : ViewModel() {
@@ -318,6 +320,7 @@ class DetailedOrderViewModel @AssistedInject constructor(
                 }.launchIn(viewModelScope)
             }
         }
+        getTopLocationsOnMap()
     }
 
     fun stopLocationUpdates() {
@@ -325,6 +328,30 @@ class DetailedOrderViewModel @AssistedInject constructor(
         _locationJob = null
         _uiState.update { currentState ->
             currentState.copy(userLocation = null)
+        }
+    }
+
+    private fun getTopLocationsOnMap() {
+        _uiState.update { currentState ->
+            currentState.copy(isLoadingTopLocationsOnMap = true)
+        }
+        viewModelScope.launch {
+            when (val response = insightRepository.getTopLocationsOnMap()) {
+                is Result.Error -> {
+                    _uiState.update { currentState ->
+                        currentState.copy(isLoadingTopLocationsOnMap = false)
+                    }
+                }
+
+                is Result.Success -> {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            isLoadingTopLocationsOnMap = false,
+                            topLocationsOnMap = response.data
+                        )
+                    }
+                }
+            }
         }
     }
 

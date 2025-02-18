@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.util.TypedValue
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.channels.awaitClose
@@ -75,4 +76,12 @@ fun Context.isGpsOrNetworkEnabledFlow(): Flow<Boolean> = callbackFlow {
     } catch (e: Exception) {
         close(e)
     }
+}
+
+fun Context.toPx(dp: Int): Float {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dp.toFloat(),
+        resources.displayMetrics
+    )
 }

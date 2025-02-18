@@ -161,7 +161,8 @@ fun ProductTabUpdateItemPreview(){
                 ),
                 store = ProductDomain.ProductStoreDomain(
                     id = "1",
-                    name = "La casa de la hamburguesa"
+                    name = "La casa de la hamburguesa",
+                    ownerId = "123"
                 ),
                 category = ProductDomain.ProductCategoryDomain(
                     id = "1",

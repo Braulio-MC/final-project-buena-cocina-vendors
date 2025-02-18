@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.jetbrains.kotlin.serialization)
@@ -87,6 +88,7 @@ dependencies {
     implementation(libs.squareup.retrofit2.coverter)
     implementation(libs.github.skydoves.sandwich)
     implementation(libs.github.skydoves.sandwich.retrofit)
+    implementation(libs.github.mp.android.chart)
     implementation(libs.androidx.paging3.runtime.ktx)
     implementation(libs.androidx.compose.paging3)
     implementation(libs.androidx.room.paging3)
@@ -100,6 +102,7 @@ dependencies {
     implementation(libs.google.playservices.maps)
     implementation(libs.google.playservices.location)
     implementation(libs.google.compose.maps)
+    implementation(libs.google.maps.utils.ktx)
     annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
     implementation(libs.google.dagger.hilt)

@@ -37,7 +37,7 @@ sealed interface Screen {
 
         @Serializable
         data class CategoryGeneralDetailed(val categoryId: String) : MainSerializable()
-        
+
         @Serializable
         data class Discount(val storeId: String) : MainSerializable()
 
@@ -46,13 +46,16 @@ sealed interface Screen {
             MainSerializable()
 
         @Serializable
-        data class Product(val storeId: String, val storeName: String) : MainSerializable()
+        data class Product(val storeId: String, val storeName: String, val storeOwnerId: String) :
+            MainSerializable()
 
         @Serializable
-        data class OrderDetailed(val orderId: String, val userId: String, val storeId: String) : MainSerializable()
+        data class OrderDetailed(val orderId: String, val userId: String, val storeId: String) :
+            MainSerializable()
 
         @Serializable
-        data class OrderRated(val orderId: String, val userId: String, val storeId: String) : MainSerializable()
+        data class OrderRated(val orderId: String, val userId: String, val storeId: String) :
+            MainSerializable()
 
         @Serializable
         data class ChatDetailed(val channelId: String) : MainSerializable()

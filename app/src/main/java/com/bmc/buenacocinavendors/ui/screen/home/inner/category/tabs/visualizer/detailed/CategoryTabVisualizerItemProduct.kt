@@ -173,7 +173,8 @@ fun CategoryTabVisualizerItemProductPreview() {
                 ),
                 store = ProductDomain.ProductStoreDomain(
                     id = "1",
-                    name = "La Cuchara Verde"
+                    name = "La Cuchara Verde",
+                    ownerId = "123"
                 ),
                 rating = BigDecimal.ZERO,
                 totalRating = BigDecimal.ZERO,
