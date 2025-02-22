@@ -72,7 +72,10 @@ class MainActivity : ComponentActivity() {
                         windowSizeClass = windowSizeClass,
                         channelViewModelFactory = channelViewModelFactory,
                         onFinishActivity = { finish() },
-                        onHasStore = { storeId, _ -> processFCMTokenCreation(storeId) }
+                        onHasStore = { storeId, _ ->
+                            processFCMTokenCreation(storeId)
+                            connectUserToGetStream()
+                        }
                     )
                 }
             }
