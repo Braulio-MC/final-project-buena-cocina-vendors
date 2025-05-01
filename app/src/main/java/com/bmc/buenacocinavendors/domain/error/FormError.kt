@@ -113,4 +113,7 @@ sealed interface FormError : BaseError {
     enum class ProductError : FormError {
         NOT_A_VALID_PRODUCT
     }
+    enum class StoreTimeError : FormError {
+        NOT_VALID_TIME_FORMAT
+    }
 }

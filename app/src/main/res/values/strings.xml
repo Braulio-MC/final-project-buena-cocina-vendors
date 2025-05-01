@@ -4,7 +4,6 @@
     <!-- Auth0 -->
     <string name="com_auth0_scheme">app</string>
 
-    <!-- Get Stream -->
 
     <!-- Api server -->
     <string name="base_api_server_url">http://10.0.2.2:5001</string>
@@ -24,6 +23,7 @@
     <string name="ui_text_form_error_phone_too_short">El numero de telefono es menor a 10 digitos</string>
     <string name="ui_text_form_error_phone_too_long">El numero de telefono excede los 10 digitos</string>
     <string name="ui_text_form_error_phone_not_valid">El numero de telefono no es valido</string>
+    <string name="ui_text_form_error_time_not_valid">La hora no es valida</string>
     <string name="ui_text_form_error_store_description_is_blank">La descripcion no puede estar vacia</string>
     <string name="ui_text_form_error_store_description_too_short">La descripcion es menor a %1$d caracteres</string>
     <string name="ui_text_form_error_store_description_too_long">La descripcion es mayor a %1$d caracteres</string>

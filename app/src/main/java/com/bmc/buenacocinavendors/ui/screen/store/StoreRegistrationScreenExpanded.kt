@@ -3,17 +3,7 @@ package com.bmc.buenacocinavendors.ui.screen.store
 import android.content.Context
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -21,19 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,8 +49,7 @@ fun StoreRegistrationScreenExpanded(
     val currentContext = LocalContext.current
 
     Scaffold(
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 title = {
@@ -87,8 +64,7 @@ fun StoreRegistrationScreenExpanded(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = null,
-                            modifier = Modifier
-                                .size(30.dp)
+                            modifier = Modifier.size(30.dp)
                         )
                     }
                 },
@@ -97,8 +73,7 @@ fun StoreRegistrationScreenExpanded(
                         Icon(
                             imageVector = Icons.Outlined.Info,
                             contentDescription = null,
-                            modifier = Modifier
-                                .size(30.dp)
+                            modifier = Modifier.size(30.dp)
                         )
                     }
                     IconButton(
@@ -116,8 +91,7 @@ fun StoreRegistrationScreenExpanded(
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.Logout,
                             contentDescription = null,
-                            modifier = Modifier
-                                .size(30.dp)
+                            modifier = Modifier.size(30.dp)
                         )
                     }
                 },
@@ -125,9 +99,7 @@ fun StoreRegistrationScreenExpanded(
             )
         },
         snackbarHost = {
-            SnackbarHost(
-                hostState = snackbarHostState,
-            )
+            SnackbarHost(hostState = snackbarHostState)
         }
     ) {
         Row(
@@ -138,23 +110,17 @@ fun StoreRegistrationScreenExpanded(
                 .verticalScroll(scrollState)
         ) {
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(10.dp),
+                modifier = Modifier.weight(1f).padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Text(
                     text = stringResource(id = R.string.store_registration_screen_image_label),
                     fontSize = 24.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier
-                        .padding(bottom = 10.dp)
+                    fontWeight = FontWeight.SemiBold
                 )
                 Box(
-                    modifier = Modifier
-                        .size(250.dp)
-                        .border(3.dp, color = Color.Gray, shape = RoundedCornerShape(10.dp)),
+                    modifier = Modifier.size(250.dp).border(3.dp, Color.Gray, RoundedCornerShape(10.dp)),
                     contentAlignment = Alignment.Center
                 ) {
                     AsyncImage(
@@ -165,15 +131,13 @@ fun StoreRegistrationScreenExpanded(
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         alignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(230.dp)
+                        modifier = Modifier.size(230.dp)
                     )
                 }
                 Button(
                     onClick = { onPickPhotoButton() },
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .size(width = 270.dp, height = 50.dp)
+                    modifier = Modifier.size(width = 270.dp, height = 50.dp)
                 ) {
                     Text(
                         text = stringResource(id = R.string.store_registration_screen_pick_photo_button_text),
@@ -191,50 +155,23 @@ fun StoreRegistrationScreenExpanded(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
+
             Spacer(modifier = Modifier.width(20.dp))
-            Column(
-                modifier = Modifier
-                    .weight(2f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(10.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.store_registration_screen_select_store_name_label),
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
+
+            Column(modifier = Modifier.weight(2f), horizontalAlignment = Alignment.CenterHorizontally) {
+
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.weight(1f).padding(10.dp)) {
+                        Text("Nombre de la tienda", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                         TextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(70.dp),
                             value = uiState.name,
-                            onValueChange = { newName ->
-                                onIntent(StoreRegistrationFormIntent.NameChanged(newName))
-                            },
-                            placeholder = {
-                                Text(
-                                    text = stringResource(id = R.string.store_registration_screen_store_name_placeholder),
-                                    fontSize = 19.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            },
+                            onValueChange = { onIntent(StoreRegistrationFormIntent.NameChanged(it)) },
+                            modifier = Modifier.fillMaxWidth().height(70.dp),
+                            placeholder = { Text("Ejemplo: Mi Tienda") },
                             singleLine = true,
                             isError = uiState.nameError != null,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
@@ -243,43 +180,19 @@ fun StoreRegistrationScreenExpanded(
                             Text(
                                 text = uiState.nameError.asString(),
                                 textAlign = TextAlign.End,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.error,
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(10.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.store_registration_screen_select_store_email_label),
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
+
+                    Column(modifier = Modifier.weight(1f).padding(10.dp)) {
+                        Text("Correo electrónico", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                         TextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(70.dp),
                             value = uiState.email,
-                            onValueChange = { newEmail ->
-                                onIntent(StoreRegistrationFormIntent.EmailChanged(newEmail))
-                            },
-                            placeholder = {
-                                Text(
-                                    text = stringResource(id = R.string.store_registration_screen_store_email_placeholder),
-                                    fontSize = 19.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            },
+                            onValueChange = { onIntent(StoreRegistrationFormIntent.EmailChanged(it)) },
+                            modifier = Modifier.fillMaxWidth().height(70.dp),
+                            placeholder = { Text("Ejemplo: tienda@email.com") },
                             singleLine = true,
                             isError = uiState.emailError != null,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
@@ -288,50 +201,23 @@ fun StoreRegistrationScreenExpanded(
                             Text(
                                 text = uiState.emailError.asString(),
                                 textAlign = TextAlign.End,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.error,
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
                 }
+
                 Spacer(modifier = Modifier.height(25.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(10.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.store_registration_screen_select_store_phone_label),
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
+
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.weight(1f).padding(10.dp)) {
+                        Text("Teléfono", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                         TextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(70.dp),
                             value = uiState.phoneNumber,
-                            onValueChange = { newPhoneNumber ->
-                                onIntent(StoreRegistrationFormIntent.PhoneChanged(newPhoneNumber))
-                            },
-                            placeholder = {
-                                Text(
-                                    text = stringResource(id = R.string.store_registration_screen_store_phone_placeholder),
-                                    fontSize = 19.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            },
+                            onValueChange = { onIntent(StoreRegistrationFormIntent.PhoneChanged(it)) },
+                            modifier = Modifier.fillMaxWidth().height(70.dp),
+                            placeholder = { Text("Ejemplo: 3331234567") },
                             singleLine = true,
                             isError = uiState.phoneNumberError != null,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -340,46 +226,19 @@ fun StoreRegistrationScreenExpanded(
                             Text(
                                 text = uiState.phoneNumberError.asString(),
                                 textAlign = TextAlign.End,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.error,
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
-                    Column(
-                        modifier = Modifier
-                            .weight(1.4f)
-                            .padding(10.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.store_registration_screen_select_store_desc_label),
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
+
+                    Column(modifier = Modifier.weight(1.4f).padding(10.dp)) {
+                        Text("Descripción", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                         TextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(150.dp),
                             value = uiState.description,
-                            onValueChange = { newDescription ->
-                                onIntent(
-                                    StoreRegistrationFormIntent.DescriptionChanged(
-                                        newDescription
-                                    )
-                                )
-                            },
-                            placeholder = {
-                                Text(
-                                    text = stringResource(id = R.string.store_registration_screen_store_desc_placeholder),
-                                    fontSize = 19.sp,
-                                )
-                            },
+                            onValueChange = { onIntent(StoreRegistrationFormIntent.DescriptionChanged(it)) },
+                            modifier = Modifier.fillMaxWidth().height(150.dp),
+                            placeholder = { Text("Ejemplo: Tienda especializada en comida mexicana") },
                             isError = uiState.descriptionError != null,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                         )
@@ -387,38 +246,68 @@ fun StoreRegistrationScreenExpanded(
                             Text(
                                 text = uiState.descriptionError.asString(),
                                 textAlign = TextAlign.End,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.error,
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
                 }
+
+                // Hora de apertura
+                Spacer(modifier = Modifier.height(25.dp))
+
+                Text("Hora de apertura (formato HH:mm)", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+                TextField(
+                    value = uiState.startTime,
+                    onValueChange = { onIntent(StoreRegistrationFormIntent.StartTimeChanged(it)) },
+                    modifier = Modifier.fillMaxWidth().height(70.dp),
+                    placeholder = { Text("Ejemplo: 09:00") },
+                    singleLine = true,
+                    isError = uiState.startTimeError != null,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+                if (uiState.startTimeError != null) {
+                    Text(
+                        text = uiState.startTimeError.asString(),
+                        textAlign = TextAlign.End,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                // Hora de cierre
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text("Hora de cierre (formato HH:mm)", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+                TextField(
+                    value = uiState.endTime,
+                    onValueChange = { onIntent(StoreRegistrationFormIntent.EndTimeChanged(it)) },
+                    modifier = Modifier.fillMaxWidth().height(70.dp),
+                    placeholder = { Text("Ejemplo: 23:00") },
+                    singleLine = true,
+                    isError = uiState.endTimeError != null,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+                if (uiState.endTimeError != null) {
+                    Text(
+                        text = uiState.endTimeError.asString(),
+                        textAlign = TextAlign.End,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                // Botón
                 Button(
-                    onClick = {
-                        onIntent(StoreRegistrationFormIntent.Submit)
-                    },
+                    onClick = { onIntent(StoreRegistrationFormIntent.Submit) },
                     enabled = !uiState.isWaitingForResult,
-                    modifier = Modifier
-                        .padding(top = 20.dp, bottom = 20.dp)
-                        .size(width = 250.dp, height = 60.dp),
+                    modifier = Modifier.padding(top = 20.dp, bottom = 20.dp).size(width = 250.dp, height = 60.dp),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     if (uiState.isWaitingForResult) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .size(25.dp),
-                        )
+                        CircularProgressIndicator(modifier = Modifier.size(25.dp))
                     } else {
-                        Text(
-                            text = stringResource(id = R.string.store_registration_screen_submit_button_text),
-                            textAlign = TextAlign.Center,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Text("Registrar tienda", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }

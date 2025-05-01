@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.bmc.buenacocinavendors.R
+import com.bmc.buenacocinavendors.core.shimmerEffect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -318,6 +319,42 @@ fun StoreRegistrationScreenCompactMedium(
                         .fillMaxWidth()
                 )
             }
+            Spacer(modifier = Modifier.padding(2.dp))
+            Text(
+                text = "Hora de apertura (formato HH:mm)",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.fillMaxWidth()
+            )
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = uiState.startTime,
+                onValueChange = { newStartTime ->
+                    onIntent(StoreRegistrationFormIntent.StartTimeChanged(newStartTime))
+                },
+                placeholder = { Text(text = "Ejemplo: 09:00") },
+                singleLine = true,
+                isError = uiState.startTimeError != null,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
+            Text(
+                text = "Hora de cierre (formato HH:mm)",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.fillMaxWidth()
+            )
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = uiState.endTime,
+                onValueChange = { newEndTime ->
+                    onIntent(StoreRegistrationFormIntent.EndTimeChanged(newEndTime))
+                },
+                placeholder = { Text(text = "Ejemplo: 23:00") },
+                singleLine = true,
+                isError = uiState.endTimeError != null,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
             Button(
                 onClick = {
                     onIntent(StoreRegistrationFormIntent.Submit)

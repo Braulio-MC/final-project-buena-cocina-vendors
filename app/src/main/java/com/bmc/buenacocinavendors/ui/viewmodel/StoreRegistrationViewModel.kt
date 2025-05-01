@@ -19,6 +19,7 @@ import com.bmc.buenacocinavendors.domain.usecase.ValidateImage
 import com.bmc.buenacocinavendors.domain.usecase.ValidatePhoneNumber
 import com.bmc.buenacocinavendors.domain.usecase.ValidateStoreDescription
 import com.bmc.buenacocinavendors.domain.usecase.ValidateStoreName
+import com.bmc.buenacocinavendors.domain.usecase.ValidateTime
 import com.bmc.buenacocinavendors.ui.screen.store.StoreRegistrationFormIntent
 import com.bmc.buenacocinavendors.ui.screen.store.StoreRegistrationFormUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class StoreRegistrationViewModel @Inject constructor(
     private val auth0Account: Auth0,
@@ -39,6 +41,7 @@ class StoreRegistrationViewModel @Inject constructor(
     private val validateEmail: ValidateEmail,
     private val validatePhoneNumber: ValidatePhoneNumber,
     private val validateImage: ValidateImage,
+    private val validateTime: ValidateTime,
     private val storeRepository: StoreRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
@@ -79,6 +82,18 @@ class StoreRegistrationViewModel @Inject constructor(
                 }
             }
 
+            is StoreRegistrationFormIntent.StartTimeChanged -> {
+                _uiState.update { currentState ->
+                    currentState.copy(startTime = intent.startTime)
+                }
+            }
+
+            is StoreRegistrationFormIntent.EndTimeChanged -> {
+                _uiState.update { currentState ->
+                    currentState.copy(endTime = intent.endTime)
+                }
+            }
+
             is StoreRegistrationFormIntent.Submit -> {
                 submit()
             }
@@ -91,13 +106,17 @@ class StoreRegistrationViewModel @Inject constructor(
         val emailResult = validateEmail(_uiState.value.email)
         val phoneNumberResult = validatePhoneNumber(_uiState.value.phoneNumber)
         val imageResult = validateImage(_uiState.value.image)
+        val startTimeResult = validateTime(_uiState.value.startTime)
+        val endTimeResult = validateTime(_uiState.value.endTime)
 
         val hasErrors = listOf(
             nameResult,
             descriptionResult,
             emailResult,
             phoneNumberResult,
-            imageResult
+            imageResult,
+            startTimeResult,
+            endTimeResult
         ).any { it is Result.Error }
 
         _uiState.update { currentState ->
@@ -106,6 +125,8 @@ class StoreRegistrationViewModel @Inject constructor(
                 descriptionError = ( descriptionResult as? Result.Error)?.asFormErrorUiText(),
                 emailError = (emailResult as? Result.Error)?.asFormErrorUiText(),
                 phoneNumberError = (phoneNumberResult as? Result.Error)?.asFormErrorUiText(),
+                startTimeError = (startTimeResult as? Result.Error)?.asFormErrorUiText(),
+                endTimeError = (endTimeResult as? Result.Error)?.asFormErrorUiText(),
                 imageError = (imageResult as? Result.Error)?.asFormErrorUiText()
             )
         }
@@ -147,10 +168,14 @@ class StoreRegistrationViewModel @Inject constructor(
             description = _uiState.value.description,
             email = _uiState.value.email,
             phoneNumber = _uiState.value.phoneNumber,
+            startTime = _uiState.value.startTime,
+            endTime = _uiState.value.endTime,
             image = _uiState.value.image!!,
             userId = userId
         )
     }
+
+
 
     private fun processSuccess() {
         viewModelScope.launch {
@@ -169,6 +194,8 @@ class StoreRegistrationViewModel @Inject constructor(
             _validationEvent.send(ValidationEvent.Failure(e))
         }
     }
+
+
 
     fun startLogout(
         c: Context,

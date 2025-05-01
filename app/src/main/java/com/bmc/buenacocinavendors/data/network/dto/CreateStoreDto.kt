@@ -7,6 +7,8 @@ data class CreateStoreDto(
     val description: String,
     val email: String,
     val phoneNumber: String,
+    val startTime: String,
+    val endTime: String,
     val userId: String,
     val image: Uri
 )
