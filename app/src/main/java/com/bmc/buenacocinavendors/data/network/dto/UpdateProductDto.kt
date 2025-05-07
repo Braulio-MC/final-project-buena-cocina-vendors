@@ -10,14 +10,13 @@ data class UpdateProductDto(
     val image: Uri?,
     val oldPath: String?,
     val quantity: Int,
-    val category: UpdateProductCategoryDto,
+    val categories: List<UpdateProductCategoryDto>,
     val store: UpdateProductStoreDto,
     val discount: UpdateProductDiscountDto
 ) {
     data class UpdateProductCategoryDto(
         val id: String,
-        val name: String,
-        val parentName: String
+        val name: String
     )
 
     data class UpdateProductStoreDto(

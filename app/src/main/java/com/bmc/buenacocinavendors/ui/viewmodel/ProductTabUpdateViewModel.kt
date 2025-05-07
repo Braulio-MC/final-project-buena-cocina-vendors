@@ -8,7 +8,6 @@ import com.bmc.buenacocinavendors.data.network.dto.UpdateProductDto
 import com.bmc.buenacocinavendors.domain.Result
 import com.bmc.buenacocinavendors.domain.mapper.asFormErrorUiText
 import com.bmc.buenacocinavendors.domain.repository.ProductRepository
-import com.bmc.buenacocinavendors.domain.usecase.ValidateCategory
 import com.bmc.buenacocinavendors.domain.usecase.ValidateDiscount
 import com.bmc.buenacocinavendors.domain.usecase.ValidateImage
 import com.bmc.buenacocinavendors.domain.usecase.ValidateProduct
@@ -37,7 +36,6 @@ class ProductTabUpdateViewModel @AssistedInject constructor(
     private val validatePrice: ValidateProductPrice,
     private val validateImage: ValidateImage,
     private val validateQuantity: ValidateProductQuantity,
-    private val validateCategory: ValidateCategory,
     private val validateDiscount: ValidateDiscount,
     private val productRepository: ProductRepository,
     @Assisted("storeId") private val storeId: String,
@@ -51,9 +49,21 @@ class ProductTabUpdateViewModel @AssistedInject constructor(
 
     fun onIntent(intent: ProductTabUpdateIntent) {
         when (intent) {
-            is ProductTabUpdateIntent.CategoryChanged -> {
+            is ProductTabUpdateIntent.AddCategory -> {
                 _uiState.update { currentState ->
-                    currentState.copy(category = intent.category)
+                    val categories = currentState.categories.toMutableList()
+                    if (!categories.contains(intent.category)) {
+                        categories.add(intent.category)
+                    }
+                    currentState.copy(categories = categories)
+                }
+            }
+
+            is ProductTabUpdateIntent.RemoveCategory -> {
+                _uiState.update { currentState ->
+                    val categories = currentState.categories.toMutableList()
+                    categories.remove(intent.category)
+                    currentState.copy(categories = categories)
                 }
             }
 
@@ -100,6 +110,7 @@ class ProductTabUpdateViewModel @AssistedInject constructor(
                 val price = intent.product?.price.toString()
                 val image = intent.product?.image?.toUri()
                 val quantity = intent.product?.quantity.toString()
+                val categories = intent.product?.categories ?: emptyList()
                 _uiState.update { currentState ->
                     currentState.copy(
                         productUpdate = intent.product,
@@ -108,6 +119,7 @@ class ProductTabUpdateViewModel @AssistedInject constructor(
                         price = price,
                         image = image,
                         quantity = quantity,
+                        categories = categories
                     )
                 }
             }
@@ -148,7 +160,6 @@ class ProductTabUpdateViewModel @AssistedInject constructor(
         val priceResult = validatePrice(_uiState.value.price)
         val imageResult = validateImage(_uiState.value.image)
         val quantityResult = validateQuantity(_uiState.value.quantity)
-        val categoryResult = validateCategory(_uiState.value.category)
         val discountResult = validateDiscount(_uiState.value.discount)
 
         val hasErrors = listOf(
@@ -158,7 +169,6 @@ class ProductTabUpdateViewModel @AssistedInject constructor(
             priceResult,
             imageResult,
             quantityResult,
-            categoryResult,
             discountResult
         ).any { it is Result.Error }
 
@@ -170,7 +180,6 @@ class ProductTabUpdateViewModel @AssistedInject constructor(
                 priceError = (priceResult as? Result.Error)?.asFormErrorUiText(),
                 imageError = (imageResult as? Result.Error)?.asFormErrorUiText(),
                 quantityError = (quantityResult as? Result.Error)?.asFormErrorUiText(),
-                categoryError = (categoryResult as? Result.Error)?.asFormErrorUiText(),
                 discountError = (discountResult as? Result.Error)?.asFormErrorUiText()
             )
         }
@@ -192,11 +201,11 @@ class ProductTabUpdateViewModel @AssistedInject constructor(
         productRepository.update(
             productId,
             dto,
-            onSuccess = {
+            onSuccess = { message, affectedProductFavorites, affectedShoppingCartProducts ->
                 processSuccess()
             },
-            onFailure = { e ->
-                processFailure(e)
+            onFailure = { message, details ->
+                processFailure(Exception(details))
             }
         )
     }
@@ -209,11 +218,12 @@ class ProductTabUpdateViewModel @AssistedInject constructor(
             image = _uiState.value.image,
             oldPath = _uiState.value.productUpdate?.image,
             quantity = _uiState.value.quantity.toInt(),
-            category = UpdateProductDto.UpdateProductCategoryDto(
-                id = _uiState.value.category!!.id,
-                name = _uiState.value.category!!.name,
-                parentName = _uiState.value.category!!.parent.name
-            ),
+            categories = _uiState.value.categories.map { category ->
+                UpdateProductDto.UpdateProductCategoryDto(
+                    id = category.id,
+                    name = category.name
+                )
+            },
             store = UpdateProductDto.UpdateProductStoreDto(
                 id = storeId,
                 name = storeName,

@@ -24,11 +24,12 @@ object ProductMapper {
                 name = network.store.name,
                 ownerId = network.store.ownerId
             ),
-            category = ProductDomain.ProductCategoryDomain(
-                id = network.category.id,
-                name = network.category.name,
-                parentName = network.category.parentName
-            ),
+            categories = network.categories.map { category ->
+                ProductDomain.ProductCategoryDomain(
+                    id = category.id,
+                    name = category.name
+                )
+            },
             rating = network.rating.toBigDecimal(),
             totalRating = network.totalRating.toBigDecimal(),
             totalReviews = network.totalReviews.toBigInteger(),

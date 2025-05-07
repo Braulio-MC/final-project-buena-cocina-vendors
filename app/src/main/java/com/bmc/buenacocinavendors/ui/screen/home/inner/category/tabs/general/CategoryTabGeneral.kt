@@ -10,6 +10,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -26,11 +31,20 @@ import com.bmc.buenacocinavendors.domain.model.CategoryDomain
 fun CategoryTabGeneralScreen(
     scrollState: ScrollState = rememberScrollState(),
     categories: LazyPagingItems<CategoryDomain>,
-    onCategoryItemClick: (String) -> Unit
+    onCategoryItemClick: (String, String) -> Unit
 ) {
+    var categoriesStartedLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(categories.loadState.refresh) {
+        if (categories.loadState.refresh is LoadState.Loading) {
+            categoriesStartedLoading = true
+        }
+    }
+
     CategoryTabGeneralScreenContent(
         scrollState = scrollState,
         categories = categories,
+        categoriesStartedLoading = categoriesStartedLoading,
         onItemClick = onCategoryItemClick
     )
 }
@@ -39,7 +53,8 @@ fun CategoryTabGeneralScreen(
 fun CategoryTabGeneralScreenContent(
     scrollState: ScrollState,
     categories: LazyPagingItems<CategoryDomain>,
-    onItemClick: (String) -> Unit
+    categoriesStartedLoading: Boolean,
+    onItemClick: (String, String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -65,7 +80,7 @@ fun CategoryTabGeneralScreenContent(
             }
 
             is LoadState.NotLoading -> {
-                if (categories.itemCount == 0) {
+                if (categories.itemCount == 0 && !categoriesStartedLoading) {
                     CategoryTabGeneralEmpty()
                 } else {
                     LazyColumn(

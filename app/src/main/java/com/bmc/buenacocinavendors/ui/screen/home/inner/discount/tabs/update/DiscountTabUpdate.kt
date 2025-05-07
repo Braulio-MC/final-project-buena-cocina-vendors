@@ -109,12 +109,16 @@ fun DiscountTabUpdate(
         viewModel.validationEvent.collect { event ->
             when (event) {
                 is DiscountTabUpdateViewModel.ValidationEvent.Failure -> {
-                    Log.e("DiscountTabUpdate", "Error ${event.error}")
+                    snackbarHostState.showSnackbar(
+                        message = "${event.message}: ${event.details}",
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short
+                    )
                 }
 
-                DiscountTabUpdateViewModel.ValidationEvent.Success -> {
+                is DiscountTabUpdateViewModel.ValidationEvent.Success -> {
                     val result = snackbarHostState.showSnackbar(
-                        message = "Descuento actualizado correctamente",
+                        message = "${event.message}, ${event.affectedProducts} updated products",
                         withDismissAction = true,
                         duration = SnackbarDuration.Short
                     )

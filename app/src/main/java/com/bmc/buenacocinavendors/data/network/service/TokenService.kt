@@ -7,6 +7,7 @@ import com.bmc.buenacocinavendors.domain.Result
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.FirebaseFunctionsException
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
@@ -18,21 +19,107 @@ class TokenService @Inject constructor(
     private val functions: FirebaseFunctions,
     private val messaging: FirebaseMessaging
 ) {
+    private fun callPushNotificationCreate(
+        fParams: HashMap<String, String>,
+        onSuccess: (String) -> Unit,
+        onFailure: (String, String) -> Unit
+    ) {
+        functions
+            .getHttpsCallable("pushNotification-create")
+            .call(fParams)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val result = task.result?.data as? Map<*, *>
+                    when {
+                        result == null -> {
+                            onFailure(
+                                "Unknown error",
+                                "Server did not return a response"
+                            )
+                        }
+
+                        else -> {
+                            val message = result["message"] as? String ?: ""
+                            onSuccess(message)
+                        }
+                    }
+                } else {
+                    val exception = task.exception
+                    if (exception is FirebaseFunctionsException) {
+                        val message = exception.message
+                            ?: "Push notification token create error"
+                        val details =
+                            exception.details?.toString() ?: ""
+                        onFailure(message, details)
+                    } else {
+                        onFailure(
+                            "Unexpected error",
+                            "Unknown error"
+                        )
+                    }
+                }
+            }
+    }
+
+    private fun callPushNotificationRemove(
+        fParams: HashMap<String, String>,
+        onSuccess: (String, Int) -> Unit,
+        onFailure: (String, String) -> Unit
+    ) {
+        functions
+            .getHttpsCallable("pushNotification-remove")
+            .call(fParams)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val result = task.result?.data as? Map<*, *>
+                    when {
+                        result == null -> {
+                            onFailure(
+                                "Unknown error",
+                                "Server did not return a response"
+                            )
+                        }
+
+                        else -> {
+                            val message = result["message"] as? String ?: ""
+                            val response = result["data"] as? Map<*, *>
+                            val processedCount = response?.get("processedCount") as? Int ?: 0
+                            onSuccess(message, processedCount)
+                        }
+                    }
+                } else {
+                    val exception = task.exception
+                    if (exception is FirebaseFunctionsException) {
+                        val message = exception.message
+                            ?: "Push notification token remove error"
+                        val details =
+                            exception.details?.toString() ?: ""
+                        onFailure(message, details)
+                    } else {
+                        onFailure(
+                            "Unexpected error",
+                            "Unknown error"
+                        )
+                    }
+                }
+            }
+    }
+
     suspend fun create(
         storeId: String = "",
         token: String? = null,
-        onSuccess: (Any?) -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: (String) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         if (storeId.isEmpty()) {
-            when (val result = userService.getUserId()) {
+            when (val userIdResult = userService.getUserId()) {
                 is Result.Error -> {
-                    Log.d("TokenService", result.error.toString())
+                    Log.d("TokenService", userIdResult.error.toString())
                 }
 
                 is Result.Success -> {
                     val qStore: (Query) -> Query = { query ->
-                        query.whereEqualTo("userId", result.data)
+                        query.whereEqualTo("userId", userIdResult.data)
                     }
                     val store = storeService.get(qStore).firstOrNull()?.firstOrNull()
                     if (store != null) {
@@ -47,21 +134,20 @@ class TokenService @Inject constructor(
                                                 "userId" to store.documentId,
                                                 "token" to tokenListener
                                             )
-                                            functions
-                                                .getHttpsCallable("pushNotification-create")
-                                                .call(fParams)
-                                                .addOnSuccessListener { response ->
-                                                    onSuccess(response.getData())
-                                                }
-                                                .addOnFailureListener { e ->
-                                                    onFailure(e)
-                                                }
+                                            callPushNotificationCreate(
+                                                fParams = fParams,
+                                                onSuccess = onSuccess,
+                                                onFailure = onFailure
+                                            )
                                         }
                                     },
                                     onFailure = onFailure
                                 )
-                            }.addOnFailureListener { e ->
-                                onFailure(e)
+                            }.addOnFailureListener { _ ->
+                                onFailure(
+                                    "Unexpected error",
+                                    "An error occurred while getting the token"
+                                )
                             }
                         } else {
                             this.exists(
@@ -73,15 +159,11 @@ class TokenService @Inject constructor(
                                             "userId" to store.documentId,
                                             "token" to token
                                         )
-                                        functions
-                                            .getHttpsCallable("pushNotification-create")
-                                            .call(fParams)
-                                            .addOnSuccessListener { response ->
-                                                onSuccess(response.getData())
-                                            }
-                                            .addOnFailureListener { e ->
-                                                onFailure(e)
-                                            }
+                                        callPushNotificationCreate(
+                                            fParams = fParams,
+                                            onSuccess = onSuccess,
+                                            onFailure = onFailure
+                                        )
                                     }
                                 },
                                 onFailure = onFailure
@@ -102,21 +184,20 @@ class TokenService @Inject constructor(
                                     "userId" to storeId,
                                     "token" to tokenListener
                                 )
-                                functions
-                                    .getHttpsCallable("pushNotification-create")
-                                    .call(fParams)
-                                    .addOnSuccessListener { response ->
-                                        onSuccess(response.getData())
-                                    }
-                                    .addOnFailureListener { e ->
-                                        onFailure(e)
-                                    }
+                                callPushNotificationCreate(
+                                    fParams = fParams,
+                                    onSuccess = onSuccess,
+                                    onFailure = onFailure
+                                )
                             }
                         },
                         onFailure = onFailure
                     )
-                }.addOnFailureListener { e ->
-                    onFailure(e)
+                }.addOnFailureListener { _ ->
+                    onFailure(
+                        "Unexpected error",
+                        "An error occurred while getting the token"
+                    )
                 }
             } else {
                 this.exists(
@@ -128,15 +209,11 @@ class TokenService @Inject constructor(
                                 "userId" to storeId,
                                 "token" to token
                             )
-                            functions
-                                .getHttpsCallable("pushNotification-create")
-                                .call(fParams)
-                                .addOnSuccessListener { response ->
-                                    onSuccess(response.getData())
-                                }
-                                .addOnFailureListener { e ->
-                                    onFailure(e)
-                                }
+                            callPushNotificationCreate(
+                                fParams = fParams,
+                                onSuccess = onSuccess,
+                                onFailure = onFailure
+                            )
                         }
                     },
                     onFailure = onFailure
@@ -149,7 +226,7 @@ class TokenService @Inject constructor(
         storeId: String,
         token: String,
         onSuccess: (Boolean) -> Unit,
-        onFailure: (Exception) -> Unit
+        onFailure: (String, String) -> Unit
     ) {
         val q = firestore.collection(USER_COLLECTION_NAME)
             .document(storeId)
@@ -159,16 +236,16 @@ class TokenService @Inject constructor(
             .get()
         q.addOnSuccessListener {
             onSuccess(it.size() > 0)
-        }.addOnFailureListener { e ->
-            onFailure(e)
+        }.addOnFailureListener { _ ->
+            onFailure("Unexpected error", "An error occurred while checking if token exists")
         }
     }
 
     suspend fun remove(
         storeId: String = "",
         token: String? = null,
-        onSuccess: (Any?) -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: (String, Int) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         if (storeId.isEmpty()) {
             when (val result = userService.getUserId()) {
@@ -188,32 +265,27 @@ class TokenService @Inject constructor(
                                     "userId" to store.documentId,
                                     "token" to tokenListener
                                 )
-                                functions
-                                    .getHttpsCallable("pushNotification-remove")
-                                    .call(fParams)
-                                    .addOnSuccessListener { response ->
-                                        onSuccess(response.getData())
-                                    }
-                                    .addOnFailureListener { e ->
-                                        onFailure(e)
-                                    }
-                            }.addOnFailureListener { e ->
-                                onFailure(e)
+                                callPushNotificationRemove(
+                                    fParams = fParams,
+                                    onSuccess = onSuccess,
+                                    onFailure = onFailure
+                                )
+                            }.addOnFailureListener { _ ->
+                                onFailure(
+                                    "Unexpected error",
+                                    "An error occurred while getting the token"
+                                )
                             }
                         } else {
                             val fParams = hashMapOf(
                                 "userId" to store.documentId,
                                 "token" to token
                             )
-                            functions
-                                .getHttpsCallable("pushNotification-remove")
-                                .call(fParams)
-                                .addOnSuccessListener { response ->
-                                    onSuccess(response.getData())
-                                }
-                                .addOnFailureListener { e ->
-                                    onFailure(e)
-                                }
+                            callPushNotificationRemove(
+                                fParams = fParams,
+                                onSuccess = onSuccess,
+                                onFailure = onFailure
+                            )
                         }
                     }
                 }
@@ -225,32 +297,27 @@ class TokenService @Inject constructor(
                         "userId" to storeId,
                         "token" to tokenListener
                     )
-                    functions
-                        .getHttpsCallable("pushNotification-remove")
-                        .call(fParams)
-                        .addOnSuccessListener { response ->
-                            onSuccess(response.getData())
-                        }
-                        .addOnFailureListener { e ->
-                            onFailure(e)
-                        }
-                }.addOnFailureListener { e ->
-                    onFailure(e)
+                    callPushNotificationRemove(
+                        fParams = fParams,
+                        onSuccess = onSuccess,
+                        onFailure = onFailure
+                    )
+                }.addOnFailureListener { _ ->
+                    onFailure(
+                        "Unexpected error",
+                        "An error occurred while getting the token"
+                    )
                 }
             } else {
                 val fParams = hashMapOf(
                     "userId" to storeId,
                     "token" to token
                 )
-                functions
-                    .getHttpsCallable("pushNotification-remove")
-                    .call(fParams)
-                    .addOnSuccessListener { response ->
-                        onSuccess(response.getData())
-                    }
-                    .addOnFailureListener { e ->
-                        onFailure(e)
-                    }
+                callPushNotificationRemove(
+                    fParams = fParams,
+                    onSuccess = onSuccess,
+                    onFailure = onFailure
+                )
             }
         }
     }

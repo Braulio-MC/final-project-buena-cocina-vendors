@@ -407,6 +407,17 @@ fun StoreUpdateScreenContent(
                             .fillMaxWidth()
                     )
                 }
+                Spacer(modifier = Modifier.padding(2.dp))
+                StoreUpdateTimeSection(
+                    startTime = uiState.startTime,
+                    endTime = uiState.endTime,
+                    onOpeningTimeChange = { hour, minute ->
+                        onIntent(StoreUpdateIntent.StartTimeChanged(hour, minute))
+                    },
+                    onClosingTimeChange = { hour, minute ->
+                        onIntent(StoreUpdateIntent.EndTimeChanged(hour, minute))
+                    }
+                )
                 Button(
                     onClick = {
                         onIntent(StoreUpdateIntent.Submit)

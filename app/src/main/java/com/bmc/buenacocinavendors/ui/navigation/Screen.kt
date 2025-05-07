@@ -32,11 +32,16 @@ sealed interface Screen {
         data class Category(val storeId: String) : MainSerializable()
 
         @Serializable
-        data class CategoryDetailed(val categoryId: String, val storeId: String) :
+        data class CategoryDetailed(
+            val categoryId: String,
+            val categoryName: String,
+            val storeId: String
+        ) :
             MainSerializable()
 
         @Serializable
-        data class CategoryGeneralDetailed(val categoryId: String) : MainSerializable()
+        data class CategoryGeneralDetailed(val categoryId: String, val categoryName: String) :
+            MainSerializable()
 
         @Serializable
         data class Discount(val storeId: String) : MainSerializable()

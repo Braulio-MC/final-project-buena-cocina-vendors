@@ -25,9 +25,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -46,7 +46,14 @@ class StoreUpdateViewModel @AssistedInject constructor(
     @Assisted private val storeId: String
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(StoreUpdateUiState())
-    val uiState = _uiState.asStateFlow()
+    val uiState = _uiState
+        .onStart {
+            collectStore()
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(SHARING_COROUTINE_TIMEOUT_IN_SEC),
+            initialValue = StoreUpdateUiState()
+        )
     val netState = connectivityRepository.observe()
         .stateIn(
             scope = viewModelScope,
@@ -55,10 +62,6 @@ class StoreUpdateViewModel @AssistedInject constructor(
         )
     private val _validationEvent = Channel<ValidationEvent>()
     val validationEvents = _validationEvent.receiveAsFlow()
-
-    init {
-        collectStore()
-    }
 
     fun onIntent(intent: StoreUpdateIntent) {
         when (intent) {
@@ -92,6 +95,18 @@ class StoreUpdateViewModel @AssistedInject constructor(
                 }
             }
 
+            is StoreUpdateIntent.StartTimeChanged -> {
+                _uiState.update { currentState ->
+                    currentState.copy(startTime = intent.hour to intent.minute)
+                }
+            }
+
+            is StoreUpdateIntent.EndTimeChanged -> {
+                _uiState.update { currentState ->
+                    currentState.copy(endTime = intent.hour to intent.minute)
+                }
+            }
+
             StoreUpdateIntent.Submit -> {
                 submit()
             }
@@ -102,13 +117,19 @@ class StoreUpdateViewModel @AssistedInject constructor(
         storeRepository.get(storeId)
             .onEach { store ->
                 _uiState.update { currentState ->
+                    val storeStartTimeHour = store?.startTime?.hour ?: 0
+                    val storeStartTimeMinute = store?.startTime?.minute ?: 0
+                    val storeEndTimeHour = store?.endTime?.hour ?: 0
+                    val storeEndTimeMinute = store?.endTime?.minute ?: 0
                     currentState.copy(
                         store = store,
                         name = store?.name ?: "",
                         description = store?.description ?: "",
                         email = store?.email ?: "",
                         phoneNumber = store?.phoneNumber ?: "",
-                        image = store?.image?.toUri()
+                        image = store?.image?.toUri(),
+                        startTime = storeStartTimeHour to storeStartTimeMinute,
+                        endTime = storeEndTimeHour to storeEndTimeMinute
                     )
                 }
             }
@@ -168,8 +189,8 @@ class StoreUpdateViewModel @AssistedInject constructor(
                         onSuccess = {
                             processSuccess()
                         },
-                        onFailure = { e ->
-                            processFailure(e)
+                        onFailure = { message, details ->
+                            processFailure(Exception(message))
                         }
                     )
                 }
@@ -183,6 +204,14 @@ class StoreUpdateViewModel @AssistedInject constructor(
             description = _uiState.value.description,
             email = _uiState.value.email,
             phoneNumber = _uiState.value.phoneNumber,
+            startTime = UpdateStoreDto.UpdateStoreWorkingHoursDto(
+                hour = _uiState.value.startTime.first,
+                minute = _uiState.value.startTime.second
+            ),
+            endTime = UpdateStoreDto.UpdateStoreWorkingHoursDto(
+                hour = _uiState.value.endTime.first,
+                minute = _uiState.value.endTime.second
+            ),
             userId = userId,
             image = _uiState.value.image,
             oldPath = _uiState.value.store?.image

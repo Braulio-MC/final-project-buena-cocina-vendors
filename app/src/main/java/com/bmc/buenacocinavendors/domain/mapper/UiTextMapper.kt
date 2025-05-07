@@ -41,7 +41,6 @@ object UiTextMapper {
             FormError.PhoneNumberError.PHONE_NUMBER_TOO_SHORT -> UiText.StringResource(R.string.ui_text_form_error_phone_too_short)
             FormError.PhoneNumberError.PHONE_NUMBER_TOO_LONG -> UiText.StringResource(R.string.ui_text_form_error_phone_too_long)
             FormError.PhoneNumberError.NOT_A_VALID_PHONE_NUMBER -> UiText.StringResource(R.string.ui_text_form_error_phone_not_valid)
-            FormError.StoreTimeError.NOT_VALID_TIME_FORMAT -> UiText.StringResource(R.string.ui_text_form_error_time_not_valid)
             FormError.StoreDescriptionError.DESCRIPTION_IS_BLANK -> UiText.StringResource(R.string.ui_text_form_error_store_description_is_blank)
             FormError.StoreDescriptionError.DESCRIPTION_TOO_SHORT -> UiText.StringResource(
                 R.string.ui_text_form_error_store_description_too_short,

@@ -8,10 +8,10 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.FirebaseFunctionsException
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import java.util.UUID
 import javax.inject.Inject
 
 class CategoryService @Inject constructor(
@@ -27,12 +27,7 @@ class CategoryService @Inject constructor(
         val new = hashMapOf(
             "id" to docRef.id,
             "name" to dto.name,
-            "parent" to hashMapOf(
-                "id" to dto.parent.id,
-                "name" to dto.parent.name
-            ),
             "storeId" to dto.storeId,
-            "paginationKey" to UUID.randomUUID().toString(),
             "createdAt" to FieldValue.serverTimestamp(),
             "updatedAt" to FieldValue.serverTimestamp()
         )
@@ -48,43 +43,84 @@ class CategoryService @Inject constructor(
     fun update(
         id: String,
         dto: UpdateCategoryDto,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: (String, Int) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         val update = hashMapOf<String, Any>(
             "id" to id,
+            "currentName" to dto.currentName,
             "name" to dto.name,
-            "parentId" to dto.parent.id,
-            "parentName" to dto.parent.name,
             "storeId" to dto.storeId
         )
         functions
             .getHttpsCallable("category-update")
             .call(update)
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener { e ->
-                onFailure(e)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val result = task.result?.data as? Map<*, *>
+                    when {
+                        result == null -> {
+                            onFailure("Unknown error", "Server did not return a response")
+                        }
+
+                        else -> {
+                            val message = result["message"] as? String ?: "Successfully updated"
+                            val response = result["data"] as? Map<*, *>
+                            val affectedProducts = response?.get("affectedProducts") as? Int ?: 0
+                            onSuccess(message, affectedProducts)
+                        }
+                    }
+                } else {
+                    val exception = task.exception
+                    if (exception is FirebaseFunctionsException) {
+                        val message = exception.message ?: "Category update error"
+                        val details = exception.details?.toString() ?: ""
+                        onFailure(message, details)
+                    } else {
+                        onFailure("Unexpected error", "Unknown error")
+                    }
+                }
             }
     }
 
     fun delete(
         id: String,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        name: String,
+        onSuccess: (String, Int) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         val delete = hashMapOf(
-            "id" to id
+            "id" to id,
+            "name" to name
         )
         functions
             .getHttpsCallable("category-remove")
             .call(delete)
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener { e ->
-                onFailure(e)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val result = task.result?.data as? Map<*, *>
+                    when {
+                        result == null -> {
+                            onFailure("Unknown error", "Server did not return a response")
+                        }
+
+                        else -> {
+                            val message = result["message"] as? String ?: "Successfully deleted"
+                            val response = result["data"] as? Map<*, *>
+                            val affectedProducts = response?.get("affectedProducts") as? Int ?: 0
+                            onSuccess(message, affectedProducts)
+                        }
+                    }
+                } else {
+                    val exception = task.exception
+                    if (exception is FirebaseFunctionsException) {
+                        val message = exception.message ?: "Category delete error"
+                        val details = exception.details?.toString() ?: ""
+                        onFailure(message, details)
+                    } else {
+                        onFailure("Unexpected error", "Unknown error")
+                    }
+                }
             }
     }
 

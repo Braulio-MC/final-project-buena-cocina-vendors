@@ -1,6 +1,5 @@
 package com.bmc.buenacocinavendors.ui.screen.home.inner.category.tabs.update
 
-import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,20 +10,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -34,13 +29,13 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -58,8 +53,6 @@ import com.bmc.buenacocinavendors.domain.model.CategoryDomain
 import com.bmc.buenacocinavendors.ui.screen.home.inner.category.tabs.CategoryEmpty
 import com.bmc.buenacocinavendors.ui.screen.home.inner.category.tabs.CategoryItemShimmer
 import com.bmc.buenacocinavendors.ui.viewmodel.CategoryTabUpdateViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun CategoryTabUpdate(
@@ -67,29 +60,32 @@ fun CategoryTabUpdate(
     storeId: String,
     snackbarHostState: SnackbarHostState,
     scrollState: ScrollState = rememberScrollState(),
-    coroutineScope: CoroutineScope = rememberCoroutineScope(),
     viewModel: CategoryTabUpdateViewModel = hiltViewModel(
         creationCallback = { factory: CategoryTabUpdateViewModel.CategoryTabUpdateViewModelFactory ->
             factory.create(storeId)
         }
     ),
     categories: LazyPagingItems<CategoryDomain>,
-    generalCategories: LazyPagingItems<CategoryDomain>,
     onSuccessfulUpdate: () -> Unit
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     val currentContext = LocalContext.current
+    var categoriesStartedLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = currentContext) {
         viewModel.validationEvents.collect { event ->
             when (event) {
                 is CategoryTabUpdateViewModel.ValidationEvent.Failure -> {
-                    Log.e("CategoryTabUpdate", "Error: ${event.error}")
+                    snackbarHostState.showSnackbar(
+                        message = event.message,
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short
+                    )
                 }
 
-                CategoryTabUpdateViewModel.ValidationEvent.Success -> {
+                is CategoryTabUpdateViewModel.ValidationEvent.Success -> {
                     val result = snackbarHostState.showSnackbar(
-                        message = "Categoria actualizada con exito",
+                        message = "${event.message}, ${event.affectedProducts} updated products",
                         withDismissAction = true,
                         duration = SnackbarDuration.Short
                     )
@@ -101,14 +97,18 @@ fun CategoryTabUpdate(
         }
     }
 
+    LaunchedEffect(categories.loadState.refresh) {
+        if (categories.loadState.refresh is LoadState.Loading) {
+            categoriesStartedLoading = true
+        }
+    }
+
     CategoryTabUpdateContent(
         windowSizeClass = windowSizeClass,
-        snackbarHostState = snackbarHostState,
         uiState = uiState.value,
         scrollState = scrollState,
-        coroutineScope = coroutineScope,
         categories = categories,
-        generalCategories = generalCategories,
+        categoriesStartedLoading = categoriesStartedLoading,
         onIntent = viewModel::onIntent
     )
 }
@@ -116,19 +116,12 @@ fun CategoryTabUpdate(
 @Composable
 fun CategoryTabUpdateContent(
     windowSizeClass: WindowSizeClass,
-    snackbarHostState: SnackbarHostState,
     uiState: CategoryTabUpdateUiState,
     scrollState: ScrollState,
-    coroutineScope: CoroutineScope,
     categories: LazyPagingItems<CategoryDomain>,
-    generalCategories: LazyPagingItems<CategoryDomain>,
+    categoriesStartedLoading: Boolean,
     onIntent: (CategoryTabUpdateIntent) -> Unit,
 ) {
-    val currentCategoryUpdateParentName =
-        uiState.currentCategoryUpdate?.parent?.name?.ifEmpty { "Sin supercategoria" }
-            ?: "Sin supercategoria"
-    val currentParentNewName = uiState.currentParent?.name ?: "No se actualizara"
-
     Column(
         modifier = Modifier
             .padding(top = 24.dp, start = 16.dp, end = 16.dp)
@@ -162,7 +155,7 @@ fun CategoryTabUpdateContent(
             }
 
             is LoadState.NotLoading -> {
-                if (categories.itemCount == 0) {
+                if (categories.itemCount == 0 && !categoriesStartedLoading) {
                     CategoryEmpty()
                 } else {
                     LazyRow(
@@ -178,7 +171,7 @@ fun CategoryTabUpdateContent(
                         ) { index ->
                             val category = categories[index]
                             if (category != null) {
-                                CategoryTabUpdateMyCategoryItem(
+                                CategoryTabUpdateItem(
                                     category = category,
                                     onClick = { cat ->
                                         onIntent(CategoryTabUpdateIntent.CategoryUpdateChanged(cat))
@@ -232,180 +225,6 @@ fun CategoryTabUpdateContent(
             )
         }
         Text(
-            text = "Supercategoria",
-            fontSize = 21.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        if (uiState.currentParent != null) {
-            if (uiState.currentParent.id == uiState.currentCategoryUpdate?.id) {
-                onIntent(CategoryTabUpdateIntent.ParentChanged())
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Categoria elegida",
-                    textAlign = TextAlign.Start,
-                    fontSize = 16.sp,
-                    color = Color.DarkGray,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Light,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(1f)
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Text(
-                    text = uiState.currentParent.name,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Normal,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .widthIn(0.dp, 250.dp)
-                )
-                IconButton(
-                    onClick = {
-                        onIntent(CategoryTabUpdateIntent.ParentChanged())
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(26.dp)
-                    )
-                }
-            }
-        } else {
-            Text(
-                text = makeBulletedList(items = listOf("No se ha elegido una supercategoria")),
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Light,
-            )
-        }
-        Text(
-            text = "De tu conjunto de categorias",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.W500
-        )
-        when (categories.loadState.refresh) {
-            is LoadState.Error -> {
-
-            }
-
-            LoadState.Loading -> {
-                if (uiState.currentParent != null) {
-                    onIntent(CategoryTabUpdateIntent.ParentChanged())
-                }
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    items(CATEGORY_TAB_UPDATE_SHIMMER_ITEM_COUNT) {
-                        CategoryItemShimmer()
-                    }
-                }
-            }
-
-            is LoadState.NotLoading -> {
-                if (categories.itemCount == 0) {
-                    CategoryEmpty()
-                } else {
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        items(
-                            count = categories.itemCount,
-                            key = categories.itemKey { item ->
-                                item.id
-                            }
-                        ) { index ->
-                            val category = categories[index]
-                            if (category != null) {
-                                CategoryTabUpdateMyCategoryItem(
-                                    category = category,
-                                    onClick = { cat ->
-                                        if (cat.id == uiState.currentCategoryUpdate?.id) {
-                                            coroutineScope.launch {
-                                                snackbarHostState.showSnackbar(
-                                                    message = "No se puede seleccionar la misma categoria",
-                                                    withDismissAction = true,
-                                                    duration = SnackbarDuration.Short
-                                                )
-                                            }
-                                        } else {
-                                            onIntent(CategoryTabUpdateIntent.ParentChanged(cat))
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        Text(
-            text = "Del conjunto general de categorias",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.W500
-        )
-        when (generalCategories.loadState.refresh) {
-            is LoadState.Error -> {
-
-            }
-
-            LoadState.Loading -> {
-                if (uiState.currentParent != null) {
-                    onIntent(CategoryTabUpdateIntent.ParentChanged())
-                }
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    items(CATEGORY_TAB_UPDATE_SHIMMER_ITEM_COUNT) {
-                        CategoryItemShimmer()
-                    }
-                }
-            }
-
-            is LoadState.NotLoading -> {
-                if (generalCategories.itemCount == 0) {
-                    CategoryEmpty()
-                } else {
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        items(
-                            count = generalCategories.itemCount,
-                            key = generalCategories.itemKey { item ->
-                                item.id
-                            }
-                        ) { index ->
-                            val category = generalCategories[index]
-                            if (category != null) {
-                                CategoryTabUpdateGeneralCategoryItem(
-                                    category = category,
-                                    onClick = { cat ->
-                                        onIntent(CategoryTabUpdateIntent.ParentChanged(cat))
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        Text(
             text = "Cambios",
             fontSize = 21.sp,
             fontWeight = FontWeight.SemiBold
@@ -433,36 +252,6 @@ fun CategoryTabUpdateContent(
                 )
                 Text(
                     text = uiState.name,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(2f)
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = currentCategoryUpdateParentName,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Normal,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(2f)
-                )
-                Icon(
-                    imageVector = Icons.Filled.KeyboardDoubleArrowRight,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .weight(0.3f)
-                )
-                Text(
-                    text = currentParentNewName,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,

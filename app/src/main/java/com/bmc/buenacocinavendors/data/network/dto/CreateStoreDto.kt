@@ -7,8 +7,13 @@ data class CreateStoreDto(
     val description: String,
     val email: String,
     val phoneNumber: String,
-    val startTime: String,
-    val endTime: String,
+    val startTime: CreateStoreWorkingHoursDto,
+    val endTime: CreateStoreWorkingHoursDto,
     val userId: String,
     val image: Uri
-)
+) {
+    data class CreateStoreWorkingHoursDto(
+        val hour: Int,
+        val minute: Int
+    )
+}

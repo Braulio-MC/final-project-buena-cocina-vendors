@@ -103,36 +103,18 @@ fun ProductTabVisualizerItem(
                         .fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(5.dp))
-                Row(
+                Text(
+                    text = "${product.categories.size} categorias",
+                    textAlign = TextAlign.End,
+                    color = Color.DarkGray,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "Categoria",
-                        textAlign = TextAlign.Start,
-                        fontSize = 14.sp,
-                        color = Color.Gray,
-                        fontStyle = FontStyle.Italic,
-                        fontWeight = FontWeight.Light,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .weight(1f)
-                    )
-                    Text(
-                        text = product.category.name,
-                        textAlign = TextAlign.End,
-                        color = Color.DarkGray,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .weight(1.4f)
-                            .padding(end = 5.dp)
-                    )
-                }
+                        .fillMaxWidth()
+                        .padding(horizontal = 5.dp)
+                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -195,44 +177,5 @@ fun ProductTabVisualizerItem(
                 }
             }
         }
-    }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun ProductTabVisualizerItemPreview() {
-    BuenaCocinaVendorsTheme {
-        ProductTabVisualizerItem(
-            product = ProductDomain(
-                id = "1",
-                name = "Hamburguesa de res con papas",
-                image = "",
-                description = "Hamburguesa de res con papas fritas",
-                price = BigDecimal(30.5).setScale(2, RoundingMode.HALF_DOWN),
-                quantity = BigInteger("5"),
-                discount = ProductDomain.ProductDiscountDomain(
-                    id = "1",
-                    percentage = BigDecimal(10.5).setScale(2, RoundingMode.HALF_DOWN),
-                    startDate = LocalDateTime.now(),
-                    endDate = LocalDateTime.of(2024, 8, 16, 0, 0)
-                ),
-                store = ProductDomain.ProductStoreDomain(
-                    id = "1",
-                    name = "La casa de la hamburguesa",
-                    ownerId = "123"
-                ),
-                category = ProductDomain.ProductCategoryDomain(
-                    id = "1",
-                    name = "Hamburger",
-                    parentName = ""
-                ),
-                rating = BigDecimal.ZERO,
-                totalRating = BigDecimal.ZERO,
-                totalReviews = BigInteger.ZERO,
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now()
-            ),
-            onClick = {}
-        )
     }
 }

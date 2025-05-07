@@ -30,7 +30,7 @@ class ProductRepository @Inject constructor(
     fun create(
         dto: CreateProductDto,
         onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onFailure: (String, String) -> Unit
     ) {
         val doc = DocumentFile.fromSingleUri(appContext, dto.image)
         doc?.let { document ->
@@ -38,7 +38,7 @@ class ProductRepository @Inject constructor(
             val imageBase64 = uriToBase64(appContext.contentResolver, dto.image)
             val fileName = document.name ?: ""
             if (imageBase64 == null) {
-                onFailure(Exception("Uri to base64 failed")) // Custom exception here
+                onFailure("Uri to base64 failed", "")
             } else {
                 productService.create(
                     dto,
@@ -55,8 +55,8 @@ class ProductRepository @Inject constructor(
     fun update(
         productId: String,
         dto: UpdateProductDto,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: (String, Int, Int) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         if (dto.image != null && dto.oldPath != null) {
             val doc = DocumentFile.fromSingleUri(appContext, dto.image)
@@ -65,7 +65,7 @@ class ProductRepository @Inject constructor(
                 val imageBase64 = uriToBase64(appContext.contentResolver, dto.image)
                 val fileName = document.name ?: ""
                 if (imageBase64 == null) {
-                    onFailure(Exception("Uri to base64 failed")) // Custom exception here
+                    onFailure("Uri to base64 failed", "")
                 } else {
                     productService.update(
                         productId,
@@ -89,14 +89,6 @@ class ProductRepository @Inject constructor(
                 onFailure
             )
         }
-    }
-
-    fun delete(
-        productId: String,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
-        productService.delete(productId, onSuccess, onFailure)
     }
 
     fun get(id: String): Flow<ProductDomain?> {

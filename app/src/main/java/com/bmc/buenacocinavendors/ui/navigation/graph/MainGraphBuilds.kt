@@ -39,8 +39,8 @@ fun NavGraphBuilder.mainGraph(
     onStoreVisualizerBackButton: () -> Unit,
     onCategoryButton: (String) -> Unit,
     onCategoryBackButton: () -> Unit,
-    onCategoryVisualizerItemClick: (String, String) -> Unit,
-    onCategoryGeneralItemClick: (String) -> Unit,
+    onCategoryVisualizerItemClick: (String, String, String) -> Unit,
+    onCategoryGeneralItemClick: (String, String) -> Unit,
     onCategoryVisualizerItemDetailedBackButton: () -> Unit,
     onCategoryGeneralItemDetailedBackButton: () -> Unit,
     onCategorySuccessfulCreation: () -> Unit,
@@ -57,7 +57,6 @@ fun NavGraphBuilder.mainGraph(
     onProductBackButton: () -> Unit,
     onProductSuccessfulCreation: () -> Unit,
     onProductSuccessfulUpdate: () -> Unit,
-    onProductSuccessfulDelete: () -> Unit,
     onOrderBackButton: () -> Unit,
     onOrderItemClick: (String, String, String) -> Unit,
     onOrderDetailedBackButton: () -> Unit,
@@ -128,7 +127,6 @@ fun NavGraphBuilder.mainGraph(
             windowSizeClass = windowSizeClass,
             onProductSuccessfulCreation = onProductSuccessfulCreation,
             onProductSuccessfulUpdate = onProductSuccessfulUpdate,
-            onProductSuccessfulDelete = onProductSuccessfulDelete,
             onBackButton = onProductBackButton
         )
         orderScreen(
@@ -231,8 +229,8 @@ fun NavGraphBuilder.storeVisualizerScreen(
 
 fun NavGraphBuilder.categoryScreen(
     windowSizeClass: WindowSizeClass,
-    onCategoryVisualizerItemClick: (String, String) -> Unit,
-    onCategoryGeneralItemClick: (String) -> Unit,
+    onCategoryVisualizerItemClick: (String, String, String) -> Unit,
+    onCategoryGeneralItemClick: (String, String) -> Unit,
     onCategorySuccessfulCreation: () -> Unit,
     onCategorySuccessfulUpdate: () -> Unit,
     onCategorySuccessfulDelete: () -> Unit,
@@ -263,6 +261,7 @@ fun NavGraphBuilder.categoryDetailedScreen(
         CategoryTabVisualizerItemDetailed(
             windowSizeClass = windowSizeClass,
             categoryId = result.categoryId,
+            categoryName = result.categoryName,
             storeId = result.storeId,
             onBackButton = onBackButton
         )
@@ -279,6 +278,7 @@ fun NavGraphBuilder.categoryGeneralDetailedScreen(
         CategoryTabGeneralItemDetailed(
             windowSizeClass = windowSizeClass,
             categoryId = result.categoryId,
+            categoryName = result.categoryName,
             onBackButton = onBackButton
         )
     }
@@ -326,7 +326,6 @@ fun NavGraphBuilder.productScreen(
     windowSizeClass: WindowSizeClass,
     onProductSuccessfulCreation: () -> Unit,
     onProductSuccessfulUpdate: () -> Unit,
-    onProductSuccessfulDelete: () -> Unit,
     onBackButton: () -> Unit
 ) {
     composable<Screen.MainSerializable.Product> {
@@ -338,7 +337,6 @@ fun NavGraphBuilder.productScreen(
             storeOwnerId = result.storeOwnerId,
             onProductSuccessfulCreation = onProductSuccessfulCreation,
             onProductSuccessfulUpdate = onProductSuccessfulUpdate,
-            onProductSuccessfulDelete = onProductSuccessfulDelete,
             onBackButton = onBackButton
         )
     }

@@ -27,19 +27,16 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bmc.buenacocinavendors.R
 import com.bmc.buenacocinavendors.core.DateUtils
 import com.bmc.buenacocinavendors.domain.model.CategoryDomain
-import com.bmc.buenacocinavendors.ui.theme.BuenaCocinaVendorsTheme
-import java.time.LocalDateTime
 
 @Composable
 fun CategoryTabVisualizerItem(
     category: CategoryDomain,
-    onClick: (String, String) -> Unit
+    onClick: (String, String, String) -> Unit
 ) {
     val createdAt = category.createdAt?.let {
         DateUtils.localDateTimeToString(it)
@@ -47,7 +44,6 @@ fun CategoryTabVisualizerItem(
     val updatedAt = category.updatedAt?.let {
         DateUtils.localDateTimeToString(it)
     } ?: "No se pudo obtener"
-    val parentCategoryName = category.parent.name.ifEmpty { "Sin supercategoria" }
 
     Card(
         elevation = CardDefaults.cardElevation(
@@ -58,7 +54,7 @@ fun CategoryTabVisualizerItem(
             .fillMaxWidth()
             .height(IntrinsicSize.Max)
             .padding(5.dp)
-            .clickable { onClick(category.id, category.storeId) }
+            .clickable { onClick(category.id, category.name, category.storeId) }
     ) {
         Row(
             modifier = Modifier
@@ -98,36 +94,6 @@ fun CategoryTabVisualizerItem(
                         .fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(5.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "Supercategoria",
-                        textAlign = TextAlign.Start,
-                        fontSize = 14.sp,
-                        color = Color.Gray,
-                        fontStyle = FontStyle.Italic,
-                        fontWeight = FontWeight.Light,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .weight(1f)
-                    )
-                    Text(
-                        text = parentCategoryName,
-                        textAlign = TextAlign.End,
-                        color = Color.DarkGray,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .weight(1.4f)
-                            .padding(end = 5.dp)
-                    )
-                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -190,26 +156,5 @@ fun CategoryTabVisualizerItem(
                 }
             }
         }
-    }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun CategoryTabVisualizerItemPreview() {
-    BuenaCocinaVendorsTheme {
-        CategoryTabVisualizerItem(
-            category = CategoryDomain(
-                id = "1",
-                name = "Hamburger",
-                parent = CategoryDomain.CategoryParentDomain(
-                    id = "1",
-                    name = "Hamburgers",
-                ),
-                storeId = "4123cr43rterfc2x45",
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now()
-            ),
-            onClick = { id, storeId -> }
-        )
     }
 }

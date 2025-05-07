@@ -68,18 +68,23 @@ fun MainGraph(
                 }
             },
             onCategoryBackButton = onCategoryBackButton,
-            onCategoryVisualizerItemClick = { categoryId, storeId ->
+            onCategoryVisualizerItemClick = { categoryId, categoryName, storeId ->
                 navController.navigate(
                     Screen.MainSerializable.CategoryDetailed(
                         categoryId,
+                        categoryName,
                         storeId
                     )
                 ) {
                     launchSingleTop = true
                 }
             },
-            onCategoryGeneralItemClick = { categoryId ->
-                navController.navigate(Screen.MainSerializable.CategoryGeneralDetailed(categoryId)) {
+            onCategoryGeneralItemClick = { categoryId, categoryName ->
+                navController.navigate(
+                    Screen.MainSerializable.CategoryGeneralDetailed(
+                        categoryId, categoryName
+                    )
+                ) {
                     launchSingleTop = true
                 }
             },
@@ -171,14 +176,6 @@ fun MainGraph(
                 }
             },
             onProductSuccessfulUpdate = {
-                navController.navigate(Screen.Main.Home.route) {
-                    popUpTo<Screen.MainSerializable.Product> {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
-            },
-            onProductSuccessfulDelete = {
                 navController.navigate(Screen.Main.Home.route) {
                     popUpTo<Screen.MainSerializable.Product> {
                         inclusive = true

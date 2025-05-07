@@ -12,7 +12,6 @@ data class DiscountNetwork(
     val startDate: Timestamp? = null,
     val endDate: Timestamp? = null,
     val storeId: String = "",
-    val paginationKey: String = "",
     @ServerTimestamp
     val createdAt: Timestamp? = null,
     @ServerTimestamp

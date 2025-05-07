@@ -36,7 +36,6 @@ import com.bmc.buenacocinavendors.domain.model.CategoryDomain
 import com.bmc.buenacocinavendors.domain.model.DiscountDomain
 import com.bmc.buenacocinavendors.domain.model.ProductDomain
 import com.bmc.buenacocinavendors.ui.screen.home.inner.product.tabs.add.ProductTabAdd
-import com.bmc.buenacocinavendors.ui.screen.home.inner.product.tabs.delete.ProductTabDelete
 import com.bmc.buenacocinavendors.ui.screen.home.inner.product.tabs.update.ProductTabUpdate
 import com.bmc.buenacocinavendors.ui.screen.home.inner.product.tabs.visualizer.ProductTabVisualizerScreen
 import com.bmc.buenacocinavendors.ui.viewmodel.ProductViewModel
@@ -60,7 +59,6 @@ fun ProductScreen(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     onProductSuccessfulCreation: () -> Unit,
     onProductSuccessfulUpdate: () -> Unit,
-    onProductSuccessfulDelete: () -> Unit,
     onBackButton: () -> Unit
 ) {
     val products = viewModel.products.collectAsLazyPagingItems()
@@ -87,7 +85,6 @@ fun ProductScreen(
         defaultDiscounts = defaultDiscounts.value,
         onProductSuccessfulCreation = onProductSuccessfulCreation,
         onProductSuccessfulUpdate = onProductSuccessfulUpdate,
-        onProductSuccessfulDelete = onProductSuccessfulDelete,
         onBackButton = onBackButton
     )
 }
@@ -109,7 +106,6 @@ fun ProductScreenContent(
     defaultDiscounts: List<DiscountDomain>?,
     onProductSuccessfulCreation: () -> Unit,
     onProductSuccessfulUpdate: () -> Unit,
-    onProductSuccessfulDelete: () -> Unit,
     onBackButton: () -> Unit
 ) {
     Scaffold(
@@ -208,15 +204,6 @@ fun ProductScreenContent(
                             discounts = discounts,
                             defaultDiscounts = defaultDiscounts,
                             onSuccessfulUpdate = onProductSuccessfulUpdate
-                        )
-                    }
-
-                    ProductTabDestination.DELETE -> {
-                        ProductTabDelete(
-                            windowSizeClass = windowSizeClass,
-                            snackbarHostState = snackbarHostState,
-                            products = products,
-                            onSuccessfulDelete = onProductSuccessfulDelete
                         )
                     }
 

@@ -62,37 +62,39 @@ class CategoryTabDeleteViewModel @Inject constructor(
             currentState.copy(isWaitingForResult = true)
         }
         val categoryId = _uiState.value.categoryDelete!!.id
+        val categoryName = _uiState.value.categoryDelete!!.name
         categoryRepository.delete(
             categoryId,
-            onSuccess = {
-                processSuccess()
+            categoryName,
+            onSuccess = { message, affectedProducts ->
+                processSuccess(message, affectedProducts)
             },
-            onFailure = { e ->
-                processFailure(e)
+            onFailure = { message, details ->
+                processFailure(message, details)
             }
         )
     }
 
-    private fun processSuccess() {
+    private fun processSuccess(message: String, affectedProducts: Int) {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(isWaitingForResult = false)
             }
-            validationEventChannel.send(ValidationEvent.Success)
+            validationEventChannel.send(ValidationEvent.Success(message, affectedProducts))
         }
     }
 
-    private fun processFailure(e: Exception) {
+    private fun processFailure(message: String, details: String) {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(isWaitingForResult = false)
             }
-            validationEventChannel.send(ValidationEvent.Failure(e))
+            validationEventChannel.send(ValidationEvent.Failure(message, details))
         }
     }
 
     sealed class ValidationEvent {
-        data object Success : ValidationEvent()
-        data class Failure(val error: Exception) : ValidationEvent()
+        data class Success(val message: String, val affectedProducts: Int) : ValidationEvent()
+        data class Failure(val message: String, val details: String) : ValidationEvent()
     }
 }

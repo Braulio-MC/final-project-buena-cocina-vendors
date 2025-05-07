@@ -31,8 +31,6 @@ fun ProductTabAddMyCategoryItem(
     category: CategoryDomain,
     onClick: (CategoryDomain) -> Unit
 ) {
-    val parentCategoryName = category.parent.name.ifEmpty { "Sin supercategoria" }
-
     Column(
         modifier = Modifier
             .padding(5.dp)
@@ -57,35 +55,5 @@ fun ProductTabAddMyCategoryItem(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Supercategoria",
-                textAlign = TextAlign.End,
-                fontSize = 14.sp,
-                color = Color.Gray,
-                fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.Light,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .weight(1f)
-            )
-            Text(
-                text = parentCategoryName,
-                textAlign = TextAlign.End,
-                color = Color.DarkGray,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W500,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 5.dp)
-            )
-        }
     }
 }

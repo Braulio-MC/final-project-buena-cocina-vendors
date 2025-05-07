@@ -39,12 +39,6 @@ class CategoryTabAddViewModel @AssistedInject constructor(
                 }
             }
 
-            is CategoryTabAddIntent.ParentChanged -> {
-                _uiState.update { currentState ->
-                    currentState.copy(currentParent = intent.parent)
-                }
-            }
-
             CategoryTabAddIntent.Submit -> {
                 submit()
             }
@@ -84,18 +78,8 @@ class CategoryTabAddViewModel @AssistedInject constructor(
     }
 
     private fun makeCreateCategoryDto(): CreateCategoryDto {
-        var parentId = ""
-        var parentName = ""
-        _uiState.value.currentParent?.let { parent ->
-            parentId = parent.id
-            parentName = parent.name
-        }
         return CreateCategoryDto(
             name = _uiState.value.name,
-            parent = CreateCategoryDto.CreateCategoryParentDto(
-                id = parentId,
-                name = parentName
-            ),
             storeId = storeId
         )
     }

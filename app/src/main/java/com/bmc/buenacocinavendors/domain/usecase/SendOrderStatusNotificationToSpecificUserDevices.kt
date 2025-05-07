@@ -12,8 +12,8 @@ class SendOrderStatusNotificationToSpecificUserDevices @Inject constructor(
         userId: String,
         storeName: String,
         orderStatus: String,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: (String, Int) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         val status = OrderStatus.entries.find { it.status == orderStatus }
         status?.let { s ->

@@ -153,11 +153,11 @@ class DiscountTabUpdateViewModel @AssistedInject constructor(
         discountRepository.update(
             discountId,
             dto,
-            onSuccess = {
-                processSuccess()
+            onSuccess = { message, affectedProducts ->
+                processSuccess(message, affectedProducts)
             },
-            onFailure = { e ->
-                processFailure(e)
+            onFailure = { message, details ->
+                processFailure(message, details)
             }
         )
     }
@@ -174,21 +174,21 @@ class DiscountTabUpdateViewModel @AssistedInject constructor(
         )
     }
 
-    private fun processSuccess() {
+    private fun processSuccess(message: String, affectedProducts: Int) {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(isWaitingForResult = false)
             }
-            _validationEvent.send(ValidationEvent.Success)
+            _validationEvent.send(ValidationEvent.Success(message, affectedProducts))
         }
     }
 
-    private fun processFailure(e: Exception) {
+    private fun processFailure(message: String, details: String) {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(isWaitingForResult = false)
             }
-            _validationEvent.send(ValidationEvent.Failure(e))
+            _validationEvent.send(ValidationEvent.Failure(message, details))
         }
     }
 
@@ -198,7 +198,7 @@ class DiscountTabUpdateViewModel @AssistedInject constructor(
     }
 
     sealed interface ValidationEvent {
-        data object Success : ValidationEvent
-        data class Failure(val error: Exception) : ValidationEvent
+        data class Success(val message: String, val affectedProducts: Int) : ValidationEvent
+        data class Failure(val message: String, val details: String) : ValidationEvent
     }
 }

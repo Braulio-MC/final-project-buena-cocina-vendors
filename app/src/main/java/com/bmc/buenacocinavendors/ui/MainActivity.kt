@@ -113,7 +113,7 @@ class MainActivity : ComponentActivity() {
             tokenRepository.create(
                 storeId = storeId,
                 onSuccess = { Log.d("MainActivity", "FCM token created") },
-                onFailure = { e -> e.printStackTrace() }
+                onFailure = { message, details -> Log.e("MainActivity", "$message: $details") }
             )
         }
     }

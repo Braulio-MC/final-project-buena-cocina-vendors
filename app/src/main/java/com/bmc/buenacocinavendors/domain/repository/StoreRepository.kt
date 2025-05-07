@@ -30,7 +30,7 @@ class StoreRepository @Inject constructor(
     fun create(
         dto: CreateStoreDto,
         onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onFailure: (String, String) -> Unit
     ) {
         val doc = DocumentFile.fromSingleUri(appContext, dto.image)
         doc?.let { document ->
@@ -38,7 +38,7 @@ class StoreRepository @Inject constructor(
             val imageBase64 = uriToBase64(appContext.contentResolver, dto.image)
             val fileName = document.name ?: ""
             if (imageBase64 == null) {
-                onFailure(Exception("Uri to base64 failed")) // Custom exception here
+                onFailure("Uri to base64 failed", "")
             } else {
                 storeService.create(
                     dto,
@@ -56,7 +56,7 @@ class StoreRepository @Inject constructor(
         storeId: String,
         dto: UpdateStoreDto,
         onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onFailure: (String, String) -> Unit
     ) {
         if (dto.image != null && dto.oldPath != null) {
             val doc = DocumentFile.fromSingleUri(appContext, dto.image)
@@ -65,7 +65,7 @@ class StoreRepository @Inject constructor(
                 val imageBase64 = uriToBase64(appContext.contentResolver, dto.image)
                 val fileName = document.name ?: ""
                 if (imageBase64 == null) {
-                    onFailure(Exception("Uri to base64 failed")) // Custom exception here
+                    onFailure("Uri to base64 failed", "")
                 } else {
                     storeService.update(
                         storeId,

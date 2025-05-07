@@ -7,7 +7,6 @@ import com.bmc.buenacocinavendors.data.network.dto.CreateProductDto
 import com.bmc.buenacocinavendors.domain.Result
 import com.bmc.buenacocinavendors.domain.mapper.asFormErrorUiText
 import com.bmc.buenacocinavendors.domain.repository.ProductRepository
-import com.bmc.buenacocinavendors.domain.usecase.ValidateCategory
 import com.bmc.buenacocinavendors.domain.usecase.ValidateDiscount
 import com.bmc.buenacocinavendors.domain.usecase.ValidateImage
 import com.bmc.buenacocinavendors.domain.usecase.ValidateProductDescription
@@ -34,7 +33,6 @@ class ProductTabAddViewModel @AssistedInject constructor(
     private val validatePrice: ValidateProductPrice,
     private val validateImage: ValidateImage,
     private val validateQuantity: ValidateProductQuantity,
-    private val validateCategory: ValidateCategory,
     private val validateDiscount: ValidateDiscount,
     private val productRepository: ProductRepository,
     @Assisted("storeId") private val storeId: String,
@@ -48,9 +46,21 @@ class ProductTabAddViewModel @AssistedInject constructor(
 
     fun onIntent(intent: ProductTabAddIntent) {
         when (intent) {
-            is ProductTabAddIntent.CategoryChanged -> {
+            is ProductTabAddIntent.AddCategory -> {
                 _uiState.update { currentState ->
-                    currentState.copy(category = intent.category)
+                    val categories = currentState.categories.toMutableList()
+                    if (!categories.contains(intent.category)) {
+                        categories.add(intent.category)
+                    }
+                    currentState.copy(categories = categories)
+                }
+            }
+
+            is ProductTabAddIntent.RemoveCategory -> {
+                _uiState.update { currentState ->
+                    val categories = currentState.categories.toMutableList()
+                    categories.remove(intent.category)
+                    currentState.copy(categories = categories)
                 }
             }
 
@@ -125,7 +135,6 @@ class ProductTabAddViewModel @AssistedInject constructor(
         val priceResult = validatePrice(_uiState.value.price)
         val imageResult = validateImage(_uiState.value.image)
         val quantityResult = validateQuantity(_uiState.value.quantity)
-        val categoryResult = validateCategory(_uiState.value.category)
         val discountResult = validateDiscount(_uiState.value.discount)
 
         val hasErrors = listOf(
@@ -134,7 +143,6 @@ class ProductTabAddViewModel @AssistedInject constructor(
             priceResult,
             imageResult,
             quantityResult,
-            categoryResult,
             discountResult
         ).any { it is Result.Error }
 
@@ -145,7 +153,6 @@ class ProductTabAddViewModel @AssistedInject constructor(
                 priceError = (priceResult as? Result.Error)?.asFormErrorUiText(),
                 imageError = (imageResult as? Result.Error)?.asFormErrorUiText(),
                 quantityError = (quantityResult as? Result.Error)?.asFormErrorUiText(),
-                categoryError = (categoryResult as? Result.Error)?.asFormErrorUiText(),
                 discountError = (discountResult as? Result.Error)?.asFormErrorUiText()
             )
         }
@@ -163,8 +170,8 @@ class ProductTabAddViewModel @AssistedInject constructor(
             onSuccess = {
                 processSuccess()
             },
-            onFailure = { e ->
-                processFailure(e)
+            onFailure = { message, details ->
+                processFailure(Exception(message))
             }
         )
     }
@@ -176,11 +183,12 @@ class ProductTabAddViewModel @AssistedInject constructor(
             price = _uiState.value.price.toDouble(),
             image = _uiState.value.image!!,
             quantity = _uiState.value.quantity.toInt(),
-            category = CreateProductDto.CreateProductCategoryDto(
-                id = _uiState.value.category!!.id,
-                name = _uiState.value.category!!.name,
-                parentName = _uiState.value.category!!.parent.name
-            ),
+            categories = _uiState.value.categories.map { category ->
+                CreateProductDto.CreateProductCategoryDto(
+                    id = category.id,
+                    name = category.name
+                )
+            },
             store = CreateProductDto.CreateProductStoreDto(
                 id = storeId,
                 name = storeName,

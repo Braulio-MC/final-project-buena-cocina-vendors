@@ -60,16 +60,16 @@ import com.bmc.buenacocinavendors.core.CATEGORY_TAB_GENERAL_ITEM_DETAILED_SHIMME
 import com.bmc.buenacocinavendors.core.DateUtils
 import com.bmc.buenacocinavendors.domain.model.ProductDomain
 import com.bmc.buenacocinavendors.ui.viewmodel.CategoryTabGeneralItemDetailedViewModel
-import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryTabGeneralItemDetailed(
     windowSizeClass: WindowSizeClass,
     categoryId: String,
+    categoryName: String,
     viewModel: CategoryTabGeneralItemDetailedViewModel = hiltViewModel(
         creationCallback = { factory: CategoryTabGeneralItemDetailedViewModel.CategoryTabGeneralItemDetailedViewModelFactory ->
-            factory.create(categoryId)
+            factory.create(categoryId, categoryName)
         }
     ),
     topAppBarState: TopAppBarState = rememberTopAppBarState(),
@@ -77,16 +77,14 @@ fun CategoryTabGeneralItemDetailed(
     scrollState: ScrollState = rememberScrollState(),
     onBackButton: () -> Unit
 ) {
-    val uiState = viewModel.category
-        .map { category -> CategoryTabGeneralItemDetailedUiState(category = category) }
-        .collectAsStateWithLifecycle(initialValue = CategoryTabGeneralItemDetailedUiState(isLoading = true))
-    val products = viewModel.products().collectAsLazyPagingItems()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val products = viewModel.products.collectAsLazyPagingItems()
 
     CategoryTabItemDetailedContent(
         windowSizeClass = windowSizeClass,
+        uiState = uiState.value,
         scrollState = scrollState,
         scrollBehavior = scrollBehavior,
-        uiState = uiState.value,
         products = products,
         onBackButton = onBackButton
     )
@@ -96,9 +94,9 @@ fun CategoryTabGeneralItemDetailed(
 @Composable
 fun CategoryTabItemDetailedContent(
     windowSizeClass: WindowSizeClass,
+    uiState: CategoryTabGeneralItemDetailedUiState,
     scrollState: ScrollState,
     scrollBehavior: TopAppBarScrollBehavior,
-    uiState: CategoryTabGeneralItemDetailedUiState,
     products: LazyPagingItems<ProductDomain>,
     onBackButton: () -> Unit
 ) {
@@ -138,8 +136,6 @@ fun CategoryTabItemDetailedContent(
                 val updatedAt = uiState.category.updatedAt?.let {
                     DateUtils.localDateTimeToString(it)
                 } ?: "No se pudo obtener la fecha"
-                val parentCategoryName =
-                    uiState.category.parent.name.ifEmpty { "Sin supercategoria" }
 
                 Column(
                     modifier = Modifier
@@ -197,41 +193,6 @@ fun CategoryTabItemDetailedContent(
                                 )
                                 Text(
                                     text = uiState.category.name,
-                                    textAlign = TextAlign.End,
-                                    color = Color.DarkGray,
-                                    fontSize = 17.sp,
-                                    fontWeight = FontWeight.W500,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(end = 5.dp)
-                                )
-                            }
-                            HorizontalDivider(
-                                thickness = 1.dp,
-                                color = Color.Gray,
-                                modifier = Modifier
-                                    .padding(vertical = 10.dp)
-                            )
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    text = "Es subcategoria de",
-                                    textAlign = TextAlign.Start,
-                                    fontSize = 17.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color.Black,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                )
-                                Text(
-                                    text = parentCategoryName,
                                     textAlign = TextAlign.End,
                                     color = Color.DarkGray,
                                     fontSize = 17.sp,

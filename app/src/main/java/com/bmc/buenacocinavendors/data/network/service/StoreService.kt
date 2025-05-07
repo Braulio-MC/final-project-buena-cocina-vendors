@@ -9,10 +9,10 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.FirebaseFunctionsException
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import java.util.UUID
 import javax.inject.Inject
 
 class StoreService @Inject constructor(
@@ -25,7 +25,7 @@ class StoreService @Inject constructor(
         imageName: String,
         imageType: String,
         onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onFailure: (String, String) -> Unit
     ) {
         val docRef = firestore.collection(STORE_COLLECTION_NAME).document()
         val path = "$FIREBASE_STORAGE_IMAGES_ROOT_DIR/${docRef.id}"
@@ -38,32 +38,70 @@ class StoreService @Inject constructor(
         functions
             .getHttpsCallable("uploadImage")
             .call(fParams)
-            .addOnSuccessListener { result ->
-                val new = hashMapOf(
-                    "id" to docRef.id,
-                    "name" to dto.name,
-                    "description" to dto.description,
-                    "email" to dto.email,
-                    "image" to result.getData(),
-                    "phoneNumber" to dto.phoneNumber,
-                    "rating" to 0,
-                    "totalRating" to 0,
-                    "totalReviews" to 0,
-                    "userId" to dto.userId,
-                    "paginationKey" to UUID.randomUUID().toString(),
-                    "createdAt" to FieldValue.serverTimestamp(),
-                    "updatedAt" to FieldValue.serverTimestamp()
-                )
-                docRef.set(new)
-                    .addOnSuccessListener {
-                        onSuccess()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val result = task.result?.data as? Map<*, *>
+                    when {
+                        result == null -> {
+                            onFailure(
+                                "Unknown error",
+                                "Server did not return a response performing image upload"
+                            )
+                        }
+
+                        else -> {
+                            val imageFirebaseUrl = result["data"] as? String ?: ""
+                            if (imageFirebaseUrl.isEmpty()) {
+                                onFailure(
+                                    "Upload error",
+                                    "Server did not return a valid image URL performing image upload"
+                                )
+                            } else {
+                                val new = hashMapOf(
+                                    "id" to docRef.id,
+                                    "name" to dto.name,
+                                    "description" to dto.description,
+                                    "email" to dto.email,
+                                    "image" to imageFirebaseUrl,
+                                    "phoneNumber" to dto.phoneNumber,
+                                    "startTime" to hashMapOf(
+                                        "hour" to dto.startTime.hour,
+                                        "minute" to dto.startTime.minute
+                                    ),
+                                    "endTime" to hashMapOf(
+                                        "hour" to dto.endTime.hour,
+                                        "minute" to dto.endTime.minute
+                                    ),
+                                    "rating" to 0,
+                                    "totalRating" to 0,
+                                    "totalReviews" to 0,
+                                    "userId" to dto.userId,
+                                    "createdAt" to FieldValue.serverTimestamp(),
+                                    "updatedAt" to FieldValue.serverTimestamp()
+                                )
+                                docRef.set(new)
+                                    .addOnSuccessListener {
+                                        onSuccess()
+                                    }
+                                    .addOnFailureListener { _ ->
+                                        onFailure(
+                                            "Store create error",
+                                            "An unexpected error occurred while creating the store"
+                                        )
+                                    }
+                            }
+                        }
                     }
-                    .addOnFailureListener { e ->
-                        onFailure(e)
+                } else {
+                    val exception = task.exception
+                    if (exception is FirebaseFunctionsException) {
+                        val message = exception.message ?: "Store create error"
+                        val details = exception.details?.toString() ?: ""
+                        onFailure(message, details)
+                    } else {
+                        onFailure("Unexpected error", "Unknown error")
                     }
-            }
-            .addOnFailureListener { e ->
-                onFailure(e)
+                }
             }
     }
 
@@ -74,7 +112,7 @@ class StoreService @Inject constructor(
         imageName: String?,
         imageType: String?,
         onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onFailure: (String, String) -> Unit
     ) {
         val docRef = firestore.collection(STORE_COLLECTION_NAME).document(id)
         if (imageBase64 != null && imageName != null && imageType != null) {
@@ -89,26 +127,56 @@ class StoreService @Inject constructor(
             functions
                 .getHttpsCallable("updateImage")
                 .call(fParams)
-                .addOnSuccessListener { result ->
-                    val update = hashMapOf(
-                        "name" to dto.name,
-                        "description" to dto.description,
-                        "email" to dto.email,
-                        "phoneNumber" to dto.phoneNumber,
-                        "userId" to dto.userId,
-                        "image" to result.getData(),
-                        "updatedAt" to FieldValue.serverTimestamp()
-                    )
-                    docRef.update(update)
-                        .addOnSuccessListener {
-                            onSuccess()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val result = task.result?.data as? Map<*, *>
+                        when {
+                            result == null -> {
+                                onFailure(
+                                    "Unknown error",
+                                    "Server did not return a response performing image update"
+                                )
+                            }
+
+                            else -> {
+                                val newImageUrl = result["data"] as? String ?: ""
+                                if (newImageUrl.isEmpty()) {
+                                    onFailure(
+                                        "Upload error",
+                                        "Server did not return a valid image URL performing image update"
+                                    )
+                                } else {
+                                    val update = hashMapOf(
+                                        "name" to dto.name,
+                                        "description" to dto.description,
+                                        "email" to dto.email,
+                                        "phoneNumber" to dto.phoneNumber,
+                                        "startTime" to hashMapOf(
+                                            "hour" to dto.startTime.hour,
+                                            "minute" to dto.startTime.minute
+                                        ),
+                                        "endTime" to hashMapOf(
+                                            "hour" to dto.endTime.hour,
+                                            "minute" to dto.endTime.minute
+                                        ),
+                                        "userId" to dto.userId,
+                                        "image" to newImageUrl,
+                                        "updatedAt" to FieldValue.serverTimestamp()
+                                    )
+                                    docRef.update(update)
+                                        .addOnSuccessListener {
+                                            onSuccess()
+                                        }
+                                        .addOnFailureListener { _ ->
+                                            onFailure(
+                                                "Store update error",
+                                                "An unexpected error occurred while updating the store"
+                                            )
+                                        }
+                                }
+                            }
                         }
-                        .addOnFailureListener { e ->
-                            onFailure(e)
-                        }
-                }
-                .addOnFailureListener { e ->
-                    onFailure(e)
+                    }
                 }
         } else {
             val update = hashMapOf(
@@ -116,6 +184,14 @@ class StoreService @Inject constructor(
                 "description" to dto.description,
                 "email" to dto.email,
                 "phoneNumber" to dto.phoneNumber,
+                "startTime" to hashMapOf(
+                    "hour" to dto.startTime.hour,
+                    "minute" to dto.startTime.minute
+                ),
+                "endTime" to hashMapOf(
+                    "hour" to dto.endTime.hour,
+                    "minute" to dto.endTime.minute
+                ),
                 "userId" to dto.userId,
                 "updatedAt" to FieldValue.serverTimestamp()
             )
@@ -123,8 +199,11 @@ class StoreService @Inject constructor(
                 .addOnSuccessListener {
                     onSuccess()
                 }
-                .addOnFailureListener { e ->
-                    onFailure(e)
+                .addOnFailureListener { _ ->
+                    onFailure(
+                        "Store update error",
+                        "An unexpected error occurred while updating the store"
+                    )
                 }
         }
     }

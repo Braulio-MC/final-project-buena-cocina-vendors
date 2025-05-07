@@ -1,6 +1,5 @@
 package com.bmc.buenacocinavendors.ui.screen.home.inner.category.tabs.delete
 
-import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,10 +23,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,7 +40,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
-import com.bmc.buenacocinavendors.R
 import com.bmc.buenacocinavendors.core.CATEGORY_TAB_DELETE_SHIMMER_ITEM_COUNT
 import com.bmc.buenacocinavendors.core.makeBulletedList
 import com.bmc.buenacocinavendors.domain.model.CategoryDomain
@@ -57,17 +58,22 @@ fun CategoryTabDelete(
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     val currentContext = LocalContext.current
+    var categoriesStartedLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = currentContext) {
         viewModel.validationEvents.collect { event ->
             when (event) {
                 is CategoryTabDeleteViewModel.ValidationEvent.Failure -> {
-                    Log.e("CategoryTabDelete", "Error: ${event.error}")
+                    snackbarHostState.showSnackbar(
+                        message = "${event.message}: ${event.details}",
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short
+                    )
                 }
 
-                CategoryTabDeleteViewModel.ValidationEvent.Success -> {
+                is CategoryTabDeleteViewModel.ValidationEvent.Success -> {
                     val result = snackbarHostState.showSnackbar(
-                        message = "Categoria eliminada con exito",
+                        message = "${event.message}, ${event.affectedProducts} updated products",
                         withDismissAction = true,
                         duration = SnackbarDuration.Short
                     )
@@ -79,11 +85,18 @@ fun CategoryTabDelete(
         }
     }
 
+    LaunchedEffect(categories.loadState.refresh) {
+        if (categories.loadState.refresh is LoadState.Loading) {
+            categoriesStartedLoading = true
+        }
+    }
+
     CategoryTabDeleteContent(
         windowSizeClass = windowSizeClass,
         uiState = uiState.value,
         scrollState = scrollState,
         categories = categories,
+        categoriesStartedLoading = categoriesStartedLoading,
         onIntent = viewModel::onIntent
     )
 }
@@ -94,6 +107,7 @@ fun CategoryTabDeleteContent(
     uiState: CategoryTabDeleteUiState,
     scrollState: ScrollState,
     categories: LazyPagingItems<CategoryDomain>,
+    categoriesStartedLoading: Boolean,
     onIntent: (CategoryTabDeleteIntent) -> Unit,
 ) {
     Column(
@@ -103,9 +117,6 @@ fun CategoryTabDeleteContent(
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        val restrictions = listOf(
-            stringResource(id = R.string.category_screen_tab_delete_restriction),
-        )
         Text(
             text = "¿Que categoria eliminar?",
             fontSize = 21.sp,
@@ -132,7 +143,7 @@ fun CategoryTabDeleteContent(
             }
 
             is LoadState.NotLoading -> {
-                if (categories.itemCount == 0) {
+                if (categories.itemCount == 0 && !categoriesStartedLoading) {
                     CategoryEmpty()
                 } else {
                     LazyRow(
@@ -171,16 +182,6 @@ fun CategoryTabDeleteContent(
                     .fillMaxWidth()
             )
         }
-        Text(
-            text = "Restricciones",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.W500
-        )
-        Text(
-            text = makeBulletedList(items = restrictions),
-            fontSize = 17.sp,
-            fontWeight = FontWeight.Light,
-        )
         Text(
             text = "Cambios",
             fontSize = 21.sp,

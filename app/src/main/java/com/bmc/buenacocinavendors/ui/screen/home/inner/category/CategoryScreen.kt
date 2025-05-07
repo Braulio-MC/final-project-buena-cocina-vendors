@@ -53,8 +53,8 @@ fun CategoryScreen(
         pageCount = { CategoryTabDestination.entries.size }
     ),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    onCategoryVisualizerItemClick: (String, String) -> Unit,
-    onCategoryGeneralItemClick: (String) -> Unit,
+    onCategoryVisualizerItemClick: (String, String, String) -> Unit,
+    onCategoryGeneralItemClick: (String, String) -> Unit,
     onCategorySuccessfulCreation: () -> Unit,
     onCategorySuccessfulUpdate: () -> Unit,
     onCategorySuccessfulDelete: () -> Unit,
@@ -93,8 +93,8 @@ fun CategoryScreenContent(
     generalCategories: LazyPagingItems<CategoryDomain>,
     pagerState: PagerState,
     coroutineScope: CoroutineScope,
-    onCategoryVisualizerItemClick: (String, String) -> Unit,
-    onCategoryGeneralItemClick: (String) -> Unit,
+    onCategoryVisualizerItemClick: (String, String, String) -> Unit,
+    onCategoryGeneralItemClick: (String, String) -> Unit,
     onCategorySuccessfulCreation: () -> Unit,
     onCategorySuccessfulUpdate: () -> Unit,
     onCategorySuccessfulDelete: () -> Unit,
@@ -172,8 +172,6 @@ fun CategoryScreenContent(
                             windowSizeClass = windowSizeClass,
                             storeId = storeId,
                             snackbarHostState = snackbarHostState,
-                            categories = categories,
-                            generalCategories = generalCategories,
                             onSuccessfulCreation = onCategorySuccessfulCreation
                         )
                     }
@@ -184,7 +182,6 @@ fun CategoryScreenContent(
                             storeId = storeId,
                             snackbarHostState = snackbarHostState,
                             categories = categories,
-                            generalCategories = generalCategories,
                             onSuccessfulUpdate = onCategorySuccessfulUpdate
                         )
                     }

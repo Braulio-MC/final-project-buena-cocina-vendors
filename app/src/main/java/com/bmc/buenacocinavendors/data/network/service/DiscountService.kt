@@ -8,10 +8,10 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.FirebaseFunctionsException
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import java.util.UUID
 import javax.inject.Inject
 
 class DiscountService @Inject constructor(
@@ -31,7 +31,6 @@ class DiscountService @Inject constructor(
             "startDate" to dto.startDate,
             "endDate" to dto.endDate,
             "storeId" to dto.storeId,
-            "paginationKey" to UUID.randomUUID().toString(),
             "createdAt" to FieldValue.serverTimestamp(),
             "updatedAt" to FieldValue.serverTimestamp()
         )
@@ -47,8 +46,8 @@ class DiscountService @Inject constructor(
     fun update(
         id: String,
         dto: UpdateDiscountDto,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: (String, Int) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         val startDateMillis = dto.startDate.toDate().time
         val endDateMillis = dto.endDate.toDate().time
@@ -63,18 +62,38 @@ class DiscountService @Inject constructor(
         functions
             .getHttpsCallable("discount-update")
             .call(update)
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener { e ->
-                onFailure(e)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val result = task.result?.data as? Map<*, *>
+                    when {
+                        result == null -> {
+                            onFailure("Unknown error", "Server did not return a response")
+                        }
+
+                        else -> {
+                            val message = result["message"] as? String ?: "Successfully updated"
+                            val response = result["data"] as? Map<*, *>
+                            val affectedProducts = response?.get("affectedProducts") as? Int ?: 0
+                            onSuccess(message, affectedProducts)
+                        }
+                    }
+                } else {
+                    val exception = task.exception
+                    if (exception is FirebaseFunctionsException) {
+                        val message = exception.message ?: "Discount update error"
+                        val details = exception.details?.toString() ?: ""
+                        onFailure(message, details)
+                    } else {
+                        onFailure("Unexpected error", "Unknown error")
+                    }
+                }
             }
     }
 
     fun delete(
         id: String,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: (String, Int) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         val delete = hashMapOf(
             "id" to id
@@ -82,11 +101,31 @@ class DiscountService @Inject constructor(
         functions
             .getHttpsCallable("discount-remove")
             .call(delete)
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener { e ->
-                onFailure(e)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val result = task.result?.data as? Map<*, *>
+                    when {
+                        result == null -> {
+                            onFailure("Unknown error", "Server did not return a response")
+                        }
+
+                        else -> {
+                            val message = result["message"] as? String ?: "Successfully deleted"
+                            val response = result["data"] as? Map<*, *>
+                            val affectedProducts = response?.get("affectedProducts") as? Int ?: 0
+                            onSuccess(message, affectedProducts)
+                        }
+                    }
+                } else {
+                    val exception = task.exception
+                    if (exception is FirebaseFunctionsException) {
+                        val message = exception.message ?: "Discount delete error"
+                        val details = exception.details?.toString() ?: ""
+                        onFailure(message, details)
+                    } else {
+                        onFailure("Unexpected error", "Unknown error")
+                    }
+                }
             }
     }
 

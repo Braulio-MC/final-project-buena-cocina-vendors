@@ -4,10 +4,6 @@
     <!-- Auth0 -->
     <string name="com_auth0_scheme">app</string>
 
-
-    <!-- Api server -->
-    <string name="base_api_server_url">http://10.0.2.2:5001</string>
-
     <!-- Py Api server -->
     <string name="py_api_server_url">http://10.0.2.2:8000</string>
 
@@ -23,7 +19,6 @@
     <string name="ui_text_form_error_phone_too_short">El numero de telefono es menor a 10 digitos</string>
     <string name="ui_text_form_error_phone_too_long">El numero de telefono excede los 10 digitos</string>
     <string name="ui_text_form_error_phone_not_valid">El numero de telefono no es valido</string>
-    <string name="ui_text_form_error_time_not_valid">La hora no es valida</string>
     <string name="ui_text_form_error_store_description_is_blank">La descripcion no puede estar vacia</string>
     <string name="ui_text_form_error_store_description_too_short">La descripcion es menor a %1$d caracteres</string>
     <string name="ui_text_form_error_store_description_too_long">La descripcion es mayor a %1$d caracteres</string>
@@ -152,8 +147,6 @@
     <!-- Category tab add -->
     <!-- Category tab update -->
     <!-- Category tab delete -->
-    <!-- Category tab delete restrictions -->
-    <string name="category_screen_tab_delete_restriction">La categoria no se puede eliminar si hay productos relacionados, primero actualiza la categoria para esos productos</string>
 
     <!-- Location Screen -->
     <!-- Location tab navigation -->
@@ -191,12 +184,10 @@
     <!-- Product tab navigation -->
     <string name="product_screen_tab_navigation_add">Agregar</string>
     <string name="product_screen_tab_navigation_update">Actualizar</string>
-    <string name="product_screen_tab_navigation_delete">Eliminar</string>
     <string name="product_screen_tab_navigation_visualize">Visualizar</string>
     <!-- Product tab navigation content description -->
     <string name="product_screen_tab_navigation_add_content_desc">Product navigation tab for add</string>
     <string name="product_screen_tab_navigation_update_content_desc">Product navigation tab for update</string>
-    <string name="product_screen_tab_navigation_delete_content_desc">Product navigation tab for delete</string>
     <string name="product_screen_tab_navigation_visualize_content_desc">Product navigation tab for visualize</string>
     <!-- Product tab add -->
     <!-- Product tab update -->

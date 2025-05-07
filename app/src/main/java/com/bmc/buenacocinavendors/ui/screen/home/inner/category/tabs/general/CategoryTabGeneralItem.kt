@@ -36,7 +36,7 @@ import com.bmc.buenacocinavendors.domain.model.CategoryDomain
 @Composable
 fun CategoryTabGeneralItem(
     category: CategoryDomain,
-    onClick: (String) -> Unit
+    onClick: (String, String) -> Unit
 ) {
     val createdAt = category.createdAt?.let {
         DateUtils.localDateTimeToString(it)
@@ -44,7 +44,6 @@ fun CategoryTabGeneralItem(
     val updatedAt = category.updatedAt?.let {
         DateUtils.localDateTimeToString(it)
     } ?: "No se pudo obtener la fecha"
-    val parentCategoryName = category.parent.name.ifEmpty { "Sin supercategoria" }
 
     Card(
         elevation = CardDefaults.cardElevation(
@@ -55,7 +54,7 @@ fun CategoryTabGeneralItem(
             .fillMaxWidth()
             .height(IntrinsicSize.Max)
             .padding(5.dp)
-            .clickable { onClick(category.id) }
+            .clickable { onClick(category.id, category.name) }
     ) {
         Row(
             modifier = Modifier
@@ -95,36 +94,6 @@ fun CategoryTabGeneralItem(
                         .fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(5.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "Supercategoria",
-                        textAlign = TextAlign.Start,
-                        fontSize = 14.sp,
-                        color = Color.Gray,
-                        fontStyle = FontStyle.Italic,
-                        fontWeight = FontWeight.Light,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .weight(1f)
-                    )
-                    Text(
-                        text = parentCategoryName,
-                        textAlign = TextAlign.End,
-                        color = Color.DarkGray,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .weight(1.4f)
-                            .padding(end = 5.dp)
-                    )
-                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),

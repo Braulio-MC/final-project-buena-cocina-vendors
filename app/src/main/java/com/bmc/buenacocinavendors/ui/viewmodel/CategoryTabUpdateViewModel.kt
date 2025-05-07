@@ -41,12 +41,6 @@ class CategoryTabUpdateViewModel @AssistedInject constructor(
                 }
             }
 
-            is CategoryTabUpdateIntent.ParentChanged -> {
-                _uiState.update { currentState ->
-                    currentState.copy(currentParent = intent.parent)
-                }
-            }
-
             is CategoryTabUpdateIntent.CategoryUpdateChanged -> {
                 val categoryName = intent.category?.name ?: ""
                 _uiState.update { currentState ->
@@ -91,47 +85,39 @@ class CategoryTabUpdateViewModel @AssistedInject constructor(
         categoryRepository.update(
             currentCategoryUpdateId,
             dto,
-            onSuccess = {
-                processSuccess()
+            onSuccess = { message, affectedProducts ->
+                processSuccess(message, affectedProducts)
             },
-            onFailure = { e ->
-                processFailure(e)
+            onFailure = { message, details ->
+                processFailure(message, details)
             }
         )
     }
 
     private fun makeUpdateCategoryDto(): UpdateCategoryDto {
-        var parentId = ""
-        var parentName = ""
-        _uiState.value.currentParent?.let { parent ->
-            parentId = parent.id
-            parentName = parent.name
-        }
+        val categoryName = _uiState.value.currentCategoryUpdate!!.name
         return UpdateCategoryDto(
+            currentName = categoryName,
             name = _uiState.value.name,
-            parent = UpdateCategoryDto.UpdateCategoryParentDto(
-                id = parentId,
-                name = parentName
-            ),
             storeId = storeId
         )
     }
 
-    private fun processSuccess() {
+    private fun processSuccess(message: String, affectedProducts: Int) {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(isWaitingForResult = false)
             }
-            validationEventChannel.send(ValidationEvent.Success)
+            validationEventChannel.send(ValidationEvent.Success(message, affectedProducts))
         }
     }
 
-    private fun processFailure(e: Exception) {
+    private fun processFailure(message: String, details: String) {
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(isWaitingForResult = false)
             }
-            validationEventChannel.send(ValidationEvent.Failure(e))
+            validationEventChannel.send(ValidationEvent.Failure(message, details))
         }
     }
 
@@ -141,7 +127,7 @@ class CategoryTabUpdateViewModel @AssistedInject constructor(
     }
 
     sealed class ValidationEvent {
-        data object Success : ValidationEvent()
-        data class Failure(val error: Exception) : ValidationEvent()
+        data class Success(val message: String, val affectedProducts: Int) : ValidationEvent()
+        data class Failure(val message: String, val details: String) : ValidationEvent()
     }
 }

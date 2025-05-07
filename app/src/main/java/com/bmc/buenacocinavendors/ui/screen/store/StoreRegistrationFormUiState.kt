@@ -15,9 +15,7 @@ data class StoreRegistrationFormUiState(
     val phoneNumberError: UiText? = null,
     val image: Uri? = null,
     val imageError: UiText? = null,
-    val startTime: String = "",
-    val startTimeError: UiText? = null,
-    val endTime: String = "",
-    val endTimeError: UiText? = null,
+    val startTime: Pair<Int, Int> = 0 to 0,
+    val endTime: Pair<Int, Int> = 0 to 0,
     val userId: String = "" // managed by view model
 )

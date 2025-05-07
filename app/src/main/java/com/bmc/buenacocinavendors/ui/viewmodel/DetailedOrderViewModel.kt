@@ -229,11 +229,11 @@ class DetailedOrderViewModel @AssistedInject constructor(
                         userId = order.user.id,
                         storeName = order.store.name,
                         orderStatus = _uiState.value.status.status,
-                        onSuccess = {
+                        onSuccess = { message, validTokens ->
                             processUpdateStatusSuccess()
                         },
-                        onFailure = { e ->
-                            processUpdateStatusFailure(e)
+                        onFailure = { message, details ->
+                            processUpdateStatusFailure(Exception(message))
                         }
                     )
                 }

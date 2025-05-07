@@ -60,12 +60,16 @@ fun DiscountTabDelete(
         viewModel.validationEvent.collect { event ->
             when (event) {
                 is DiscountTabDeleteViewModel.ValidationEvent.Failure -> {
-                    Log.e("DiscountTabDelete", "Error: ${event.error}")
+                    snackbarHostState.showSnackbar(
+                        message = "${event.message}: ${event.details}",
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short
+                    )
                 }
 
-                DiscountTabDeleteViewModel.ValidationEvent.Success -> {
+                is DiscountTabDeleteViewModel.ValidationEvent.Success -> {
                     val result = snackbarHostState.showSnackbar(
-                        message = "Descuento eliminado correctamente",
+                        message = "${event.message}, ${event.affectedProducts} updated products",
                         withDismissAction = true,
                         duration = SnackbarDuration.Short
                     )

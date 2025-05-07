@@ -9,6 +9,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
@@ -25,6 +27,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
@@ -59,6 +63,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.bmc.buenacocinavendors.core.PRODUCT_TAB_ADD_SHIMMER_ITEM_COUNT
 import com.bmc.buenacocinavendors.core.makeBulletedList
+import com.bmc.buenacocinavendors.domain.mapper.asProductCategoryDomain
 import com.bmc.buenacocinavendors.domain.model.CategoryDomain
 import com.bmc.buenacocinavendors.domain.model.DiscountDomain
 import com.bmc.buenacocinavendors.ui.screen.home.inner.category.tabs.CategoryEmpty
@@ -346,54 +351,44 @@ fun ProductTabAddContent(
         }
         Spacer(modifier = Modifier.height(5.dp))
         Text(
-            text = "Categoria",
+            text = "Categorias",
             fontSize = 21.sp,
             fontWeight = FontWeight.SemiBold
         )
-        if (uiState.category != null) {
-            Row(
+        if (uiState.categories.isNotEmpty()) {
+            FlowRow(
                 modifier = Modifier
                     .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = "Categoria elegida",
-                    textAlign = TextAlign.Start,
-                    fontSize = 16.sp,
-                    color = Color.DarkGray,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Light,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(1f)
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Text(
-                    text = uiState.category.name,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Normal,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .widthIn(0.dp, 250.dp)
-                )
-                IconButton(
-                    onClick = {
-                        onIntent(ProductTabAddIntent.CategoryChanged())
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        contentDescription = null,
+                uiState.categories.forEach { category ->
+                    AssistChip(
+                        onClick = { onIntent(ProductTabAddIntent.RemoveCategory(category)) },
+                        label = {
+                            Text(
+                                text = category.name,
+                                textAlign = TextAlign.Center,
+                                fontSize = 12.5.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
+                        colors = AssistChipDefaults.assistChipColors(),
+                        shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
-                            .size(26.dp)
+                            .sizeIn(
+                                maxWidth = 90.dp,
+                                minHeight = 30.dp,
+                                maxHeight = 35.dp
+                            )
+                            .padding(vertical = 2.dp)
                     )
                 }
             }
         } else {
             Text(
-                text = makeBulletedList(items = listOf("No se ha elegido una categoria")),
+                text = makeBulletedList(items = listOf("No se han elegido categorias")),
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Light,
             )
@@ -409,9 +404,6 @@ fun ProductTabAddContent(
             }
 
             LoadState.Loading -> {
-                if (uiState.category != null) {
-                    onIntent(ProductTabAddIntent.CategoryChanged())
-                }
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -443,7 +435,9 @@ fun ProductTabAddContent(
                                 ProductTabAddMyCategoryItem(
                                     category = category,
                                     onClick = {
-                                        onIntent(ProductTabAddIntent.CategoryChanged(it))
+                                        onIntent(ProductTabAddIntent.AddCategory(
+                                            it.asProductCategoryDomain()
+                                        ))
                                     }
                                 )
                             }
@@ -463,9 +457,6 @@ fun ProductTabAddContent(
             }
 
             LoadState.Loading -> {
-                if (uiState.category != null) {
-                    onIntent(ProductTabAddIntent.CategoryChanged())
-                }
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -497,7 +488,9 @@ fun ProductTabAddContent(
                                 ProductTabAddGeneralCategoryItem(
                                     category = category,
                                     onClick = {
-                                        onIntent(ProductTabAddIntent.CategoryChanged(it))
+                                        onIntent(ProductTabAddIntent.AddCategory(
+                                            it.asProductCategoryDomain()
+                                        ))
                                     }
                                 )
                             }
@@ -505,17 +498,6 @@ fun ProductTabAddContent(
                     }
                 }
             }
-        }
-        if (uiState.categoryError != null) {
-            Text(
-                text = uiState.categoryError.asString(),
-                textAlign = TextAlign.End,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
         }
         Spacer(modifier = Modifier.height(5.dp))
         Text(

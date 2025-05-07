@@ -32,16 +32,16 @@ class DiscountRepository @Inject constructor(
     fun update(
         id: String,
         dto: UpdateDiscountDto,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: (String, Int) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         discountService.update(id, dto, onSuccess, onFailure)
     }
 
     fun delete(
         id: String,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: (String, Int) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         discountService.delete(id, onSuccess, onFailure)
     }

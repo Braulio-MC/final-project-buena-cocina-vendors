@@ -9,6 +9,5 @@ data class CategoryTabUpdateUiState(
     val nameError: UiText? = null,
     val currentCategoryUpdate: CategoryDomain? = null,
     val currentCategoryUpdateError: UiText? = null,
-    val currentParent: CategoryDomain? = null,
     val storeId: String = "" // managed by view model
 )

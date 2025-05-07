@@ -32,18 +32,19 @@ class CategoryRepository @Inject constructor(
     fun update(
         id: String,
         dto: UpdateCategoryDto,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: (String, Int) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         categoryService.update(id, dto, onSuccess, onFailure)
     }
 
     fun delete(
         id: String,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
+        name: String,
+        onSuccess: (String, Int) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
-        categoryService.delete(id, onSuccess, onFailure)
+        categoryService.delete(id, name, onSuccess, onFailure)
     }
 
     fun get(id: String): Flow<CategoryDomain?> {

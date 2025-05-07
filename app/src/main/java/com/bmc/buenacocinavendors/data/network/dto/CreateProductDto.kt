@@ -9,14 +9,13 @@ data class CreateProductDto(
     val price: Double,
     val image: Uri,
     val quantity: Int,
-    val category: CreateProductCategoryDto,
+    val categories: List<CreateProductCategoryDto>,
     val store: CreateProductStoreDto,
     val discount: CreateProductDiscountDto
 ) {
     data class CreateProductCategoryDto(
         val id: String,
-        val name: String,
-        val parentName: String
+        val name: String
     )
 
     data class CreateProductStoreDto(

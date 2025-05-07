@@ -8,7 +8,7 @@ sealed class StoreRegistrationFormIntent {
     data class EmailChanged(val email: String) : StoreRegistrationFormIntent()
     data class PhoneChanged(val phone: String) : StoreRegistrationFormIntent()
     data class ImageChanged(val image: Uri?) : StoreRegistrationFormIntent()
-    data class StartTimeChanged(val startTime: String) : StoreRegistrationFormIntent()
-    data class EndTimeChanged(val endTime: String) : StoreRegistrationFormIntent()
+    data class StartTimeChanged(val hour: Int, val minute: Int) : StoreRegistrationFormIntent()
+    data class EndTimeChanged(val hour: Int, val minute: Int) : StoreRegistrationFormIntent()
     data object Submit : StoreRegistrationFormIntent()
 }

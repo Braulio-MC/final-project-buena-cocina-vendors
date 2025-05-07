@@ -23,17 +23,12 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.bmc.buenacocinavendors.core.DateUtils
 import com.bmc.buenacocinavendors.domain.model.ProductDomain
-import com.bmc.buenacocinavendors.ui.theme.BuenaCocinaVendorsTheme
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.time.LocalDateTime
 
 @Composable
 fun CategoryTabVisualizerItemProduct(
@@ -58,6 +53,7 @@ fun CategoryTabVisualizerItemProduct(
                 .size(100.dp)
                 .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                 .weight(1f),
+            contentAlignment = Alignment.Center
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
@@ -148,43 +144,5 @@ fun CategoryTabVisualizerItemProduct(
                 )
             }
         }
-    }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun CategoryTabVisualizerItemProductPreview() {
-    BuenaCocinaVendorsTheme {
-        CategoryTabVisualizerItemProduct(
-            productDomain = ProductDomain(
-                id = "1",
-                name = "Hamburguesa de res y papas",
-                description = "Esto es una descripcion",
-                image = "",
-                price = BigDecimal(55.6),
-                updatedAt = LocalDateTime.now(),
-                createdAt = LocalDateTime.now(),
-                quantity = BigInteger("2"),
-                discount = ProductDomain.ProductDiscountDomain(
-                    id = "1",
-                    percentage = BigDecimal(10.5),
-                    startDate = LocalDateTime.now(),
-                    endDate = LocalDateTime.now(),
-                ),
-                store = ProductDomain.ProductStoreDomain(
-                    id = "1",
-                    name = "La Cuchara Verde",
-                    ownerId = "123"
-                ),
-                rating = BigDecimal.ZERO,
-                totalRating = BigDecimal.ZERO,
-                totalReviews = BigInteger.ZERO,
-                category = ProductDomain.ProductCategoryDomain(
-                    id = "1",
-                    name = "Hamburger",
-                    parentName = ""
-                )
-            )
-        )
     }
 }

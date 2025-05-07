@@ -9,8 +9,8 @@ class TokenRepository @Inject constructor(
     suspend fun create(
         storeId: String = "",
         token: String? = null,
-        onSuccess: (Any?) -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: (String) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         tokenService.create(
             storeId = storeId,
@@ -22,8 +22,8 @@ class TokenRepository @Inject constructor(
 
     suspend fun remove(
         token: String? = null,
-        onSuccess: (Any?) -> Unit,
-        onFailure: (Exception) -> Unit
+        onSuccess: (String, Int) -> Unit,
+        onFailure: (String, String) -> Unit
     ) {
         tokenService.remove(
             token = token,
